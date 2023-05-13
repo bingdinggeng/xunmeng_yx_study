@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class XunmengYxStudyApplication {
+public class YxStudyApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(XunmengYxStudyApplication.class, args);
+        SpringApplication.run(YxStudyApplication.class, args);
     }
 
 }
