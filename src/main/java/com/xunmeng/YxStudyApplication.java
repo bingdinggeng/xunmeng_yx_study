@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableAsync
 @SpringBootApplication
+@MapperScan("com.xunmeng.youxuan.mapper")
+@EnableScheduling
+@ServletComponentScan
 public class YxStudyApplication {
 
     public static void main(String[] args) {
