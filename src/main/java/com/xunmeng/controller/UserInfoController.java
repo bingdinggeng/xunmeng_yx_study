@@ -11,8 +11,9 @@ import com.xunmeng.requestqo.LoginQo;
 import com.xunmeng.requestqo.Results;
 import com.xunmeng.requestqo.UserCacheQo;
 import com.xunmeng.service.IXmAdminService;
+import com.xunmeng.utils.CheckLoginRoleTypeUtil;
+import com.xunmeng.utils.RedisStringUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -40,48 +41,17 @@ import javax.annotation.Resource;
 @ApiSort(value = 2)
 @RequestMapping("/user")
 public class UserInfoController {
-
-    @Value("${user.cache.time}")
-    private Long userCacheTime;
     @Resource
     private IXmAdminService xmAdminService;
 
-    private UserInfo cacheUserInfoForAdmin(String openId, String sessionKey, XmAdmin admin, Integer dataSource) {
-        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + openId;
-        if(StringUtils.isNotEmpty(admin.getWxOpenId())) {
-            cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + admin.getWxOpenId();
-        }
-        UserCacheQo cacheQo = new UserCacheQo();
-        cacheQo.setUserId(admin.getUserId());
-        cacheQo.setRoleType(ConstantEnum.USER_XM);
-        redisUtil.set(cacheKeyUser, JSON.toJSONString(cacheQo),userCacheTime);
-
-        String userKey = CacheKeyEnum.USER_INFO + admin.getUserId();
-
-        UserInfo user = new UserInfo();
-        user.setMobileNumber(admin.getPhone());
-        user.setNickName(admin.getUserName());
-
-        user.setOpenId(openId);
-        if(StringUtils.isNotEmpty(admin.getWxOpenId())) {
-            user.setOpenId(admin.getWxOpenId());
-        }
-        user.setRealName(admin.getNickName());
-        if(checkAdmin(admin.getUserId())){
-            user.setRoleType(ConstantEnum.USER_ADMIN);
-        }else if(checkService(admin.getUserId())){
-            user.setRoleType(ConstantEnum.USER_SERVICE);
-        }else {
-            user.setRoleType(ConstantEnum.USER_XM);
-        }
-        user.setUserId(admin.getUserId().longValue());
-        user.setAvatar(admin.getAvatar());
-        user.setDataSource(dataSource);
-        user.setJoinTime(admin.getJoinTime());
-        redisUtil.set(userKey, JSON.toJSONString(user),userCacheTime);
-        return user;
-    }
-
+    /**
+     * description:
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.base.Response<com.xunmeng.domain.UserInfo>
+     * @author LTM
+     * @date: 2023/5/15 9:51
+     */
     @ApiOperation(value = "公司内部员工登录",notes = "公司内部员工密码登录")
     @PostMapping("/login/user")
     public Response<UserInfo> userLogin(@RequestBody @Validated LoginQo requestModel){
