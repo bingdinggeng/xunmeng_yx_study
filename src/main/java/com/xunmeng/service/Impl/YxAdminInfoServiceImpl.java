@@ -19,3 +19,4 @@ import org.springframework.stereotype.Service;
 public class YxAdminInfoServiceImpl extends ServiceImpl<YxAdminInfoMapper, YxAdminInfo> implements IYxAdminInfoService {
 
 }
+
