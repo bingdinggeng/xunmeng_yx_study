@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xunmeng.base.Response;
+import com.xunmeng.controller.BaseController;
+import com.xunmeng.controller.UserInfoController;
 import com.xunmeng.domain.UserInfo;
 import com.xunmeng.domain.XmAdmin;
 import com.xunmeng.enums.CacheKeyEnum;
@@ -15,14 +17,14 @@ import com.xunmeng.requestqo.LoginQo;
 import com.xunmeng.requestqo.Results;
 import com.xunmeng.requestqo.UserCacheQo;
 import com.xunmeng.service.IXmAdminService;
-import com.xunmeng.utils.CheckLoginRoleTypeUtil;
+import com.xunmeng.service.IYxAdminInfoService;
 import com.xunmeng.utils.DataUtil;
 import com.xunmeng.utils.RedisStringUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 
@@ -41,13 +43,16 @@ import java.util.List;
 public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> implements IXmAdminService {
     @Value("${user.cache.time}")
     private Long userCacheTime;
-    @Resource
+    @Autowired
     private IXmAdminService xmAdminService;
-    @Resource
-    private RedisStringUtil redisStringUtil;
+    @Autowired
+    private RedisStringUtil redisUtil;
+    @Autowired
+    private BaseController baseController;
+
     
     /** 
-     * description:
+     * description:寻梦员工登录
      * @param: 
      * @param requestModel 
      * @return: com.xunmeng.base.Response<com.xunmeng.domain.UserInfo> 
@@ -92,7 +97,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         UserCacheQo cacheQo = new UserCacheQo();
         cacheQo.setUserId(admin.getUserId());
         cacheQo.setRoleType(admin.getRoleId());
-        redisStringUtil.set(cacheKeyUser, JSON.toJSONString(cacheQo),userCacheTime);
+        redisUtil.set(cacheKeyUser, JSON.toJSONString(cacheQo),userCacheTime);
 
         String userKey = CacheKeyEnum.USER_INFO + admin.getUserId();
 
@@ -105,14 +110,19 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
             user.setOpenId(admin.getWxOpenId());
         }
         user.setRealName(admin.getNickName());
-        if(CheckLoginRoleTypeUtil.checkAdmin(admin.getUserId(), redisStringUtil)){
+        if(baseController.checkAdmin(admin.getUserId())){
             user.setRoleType(ConstantEnum.USER_ADMIN);
-        }else if(CheckLoginRoleTypeUtil.checkService(admin.getUserId(), redisStringUtil)){
+        }else if(baseController.checkService(admin.getUserId())){
             user.setRoleType(ConstantEnum.USER_SERVICE);
         }else {
             user.setRoleType(ConstantEnum.USER_XM);
         }
 
-        return null;
+        user.setUserId(admin.getUserId().longValue());
+        user.setAvatar(admin.getAvatar());
+        user.setDataSource(dataSource);
+        user.setJoinTime(admin.getJoinTime());
+        redisUtil.set(userKey, JSON.toJSONString(user),userCacheTime);
+        return user;
     }
 }
