@@ -4,7 +4,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.xunmeng.base.Response;
 import com.xunmeng.domain.UserInfo;
 import com.xunmeng.requestqo.LoginQo;
-import com.xunmeng.requestqo.Results;
+import com.xunmeng.base.Results;
 import com.xunmeng.service.IXmAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +35,7 @@ public class UserInfoController{
     private IXmAdminService xmAdminService;
 
     /**
-     * description:
+     * description: 登录入口
      * @param:
      * @param requestModel
      * @return: com.xunmeng.base.Response<com.xunmeng.domain.UserInfo>
@@ -44,9 +44,14 @@ public class UserInfoController{
      */
     @ApiOperation(value = "公司内部员工登录",notes = "公司内部员工密码登录")
     @PostMapping("/login/user")
-    public Response<UserInfo> userLogin(@RequestBody @Validated LoginQo requestModel){
-        // 注意这里的Response<UserInfo>  没加<UserInfo>的时候会报错
-        Response<UserInfo> response = xmAdminService.login(requestModel);
-        return Results.newResponse(response.getData(),response.getCode(),response.getMsg());
+    public Response<UserInfo> userLogin(@RequestBody @Validated LoginQo requestModel) {
+
+        return xmAdminService.login(requestModel);
+
+       /* 注意这里的Response<UserInfo>  没加<UserInfo>的时候会报错
+         Response<UserInfo> response = xmAdminService.login(requestModel);
+         return Results.newResponse(response.getData(),response.getCode(),response.getMsg());
+        这是最开始想着拆分原代码controller功能到service层想的办法，后来想到完全没有必要多绕一层，直接返回方法结果就可以了
+        */
     }
 }

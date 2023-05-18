@@ -1,5 +1,6 @@
 package com.xunmeng.requestqo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class LoginQo implements Serializable {
     private String nickName;
 
     @ApiModelProperty(value = "密码",example = "abc123")
-    private String password;
+    private String pass;
 
     @ApiModelProperty(value = "极光推送设备标识")
     private String registrationId;

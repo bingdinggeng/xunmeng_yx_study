@@ -1,7 +1,7 @@
-package com.xunmeng.requestqo;
+package com.xunmeng.base;
 
 
-import com.xunmeng.base.Response;
+
 import com.xunmeng.enums.ErrorCodeEnum;
 
 /**

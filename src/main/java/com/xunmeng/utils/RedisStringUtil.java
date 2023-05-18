@@ -68,7 +68,6 @@ public class RedisStringUtil {
 
     public Object get(String key){
 
-        return null;
-
+        return key == null ? null : redisTemplate.opsForValue().get(key);
     }
 }

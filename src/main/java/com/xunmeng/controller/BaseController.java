@@ -47,6 +47,7 @@ public class BaseController {
 
         List<YxAdminInfo> adminList;
         if(adminObject != null){
+            // 将adminObject对象转换成json字符串再解析成一个YxAdminInfo类型的对象，赋值给adminList
             adminList = JSON.parseArray(adminObject.toString(), YxAdminInfo.class);
         }else{
             adminList = yxAdminInfoService.list(new QueryWrapper<YxAdminInfo>()
@@ -63,7 +64,7 @@ public class BaseController {
     }
 
     /**
-     * description: 判断当前登陆人员是否为寻梦客服
+     * description: 判断当前登陆人员是否为优选客服
      * @param:
      * @param userId
      * @return: boolean
@@ -87,11 +88,14 @@ public class BaseController {
         String cacheServiceKey = CacheKeyEnum.USER_SERVICE_LIST;
         Object adminObject = redisUtil.get(cacheServiceKey);
 
-        List<YxAdminInfo> adminList = yxAdminInfoService.list(new QueryWrapper<YxAdminInfo>()
-                .eq("data_status",ConstantEnum.USER_SERVICE));
-        if(adminObject == null){
-            if(adminList != null && !adminList.isEmpty()){
-                redisUtil.set(cacheServiceKey,JSON.toJSONString(adminList),userCacheTime);
+        List<YxAdminInfo> adminList;
+        if(adminObject != null){
+            adminList = JSON.parseArray(adminObject.toString(), YxAdminInfo.class);
+        }else {
+            adminList = yxAdminInfoService.list(new QueryWrapper<YxAdminInfo>()
+                    .eq("data_status", ConstantEnum.NORMAL));
+            if (adminList != null && !adminList.isEmpty()) {
+                redisUtil.set(cacheServiceKey, JSON.toJSONString(adminList), userCacheTime);
             }
         }
         return adminList;
