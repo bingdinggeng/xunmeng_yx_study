@@ -70,4 +70,21 @@ public class RedisStringUtil {
 
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
+
+    /**
+     * description: 删除指定的缓存
+     * @param:
+     * @param cacheKey
+     * @return: boolean
+     * @author LTM
+     * @date: 2023/5/19 15:40
+     */
+    public boolean deleteRedis(String cacheKey) {
+        try{
+            return redisTemplate.delete(cacheKey);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

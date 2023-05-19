@@ -6,11 +6,17 @@ import com.xunmeng.domain.YxAdminInfo;
 import com.xunmeng.enums.CacheKeyEnum;
 import com.xunmeng.enums.ConstantEnum;
 import com.xunmeng.service.IYxAdminInfoService;
+import com.xunmeng.utils.CookiesUtils;
 import com.xunmeng.utils.RedisStringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletRequestAttributeEvent;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -32,6 +38,11 @@ public class BaseController {
 
     @Value("${user.cache.time}")
     private static Long userCacheTime;
+
+    @Value("${model.type}")
+    private String modelType;
+
+    private String defaultOpenId =  "sdfsdfsdfqw41231231wer121";
 
     /**
      * description: 判断当前登陆人员是否为优选管理员
@@ -100,4 +111,61 @@ public class BaseController {
         }
         return adminList;
     }
+
+    /**
+     * description:  获取当前请求人的ID
+     * @param:
+     * @return: java.lang.String
+     * @author LTM
+     * @date: 2023/5/19 15:28
+     */
+    public String getCurrentUserOpenId(){
+
+        String openId = getCurrentUserOpenIdForHtml();
+        if(StringUtils.isNotEmpty(openId)){
+            return openId;
+        }
+
+        openId = getCurrentUserOpenIdWx();
+        if(StringUtils.isNotEmpty(openId)){
+            return openId;
+        }
+
+        if(StringUtils.isEmpty(openId) && "test".equals(modelType)){
+            openId = defaultOpenId;
+        }
+        return openId;
+    }
+
+
+    /**
+     * description: 获取当前请求人的openId
+     * @param:
+     * @return: java.lang.String
+     * @author LTM
+     * @date: 2023/5/19 15:17
+     */
+    private String getCurrentUserOpenIdForHtml() {
+        // 注意这里有一些修改，在于return cookie改成了null
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String cookie = CookiesUtils.getCookieValue(request,"usertoken");
+        if(StringUtils.isBlank(cookie)){
+            // 这里return的是openId
+            return request.getHeader("usertoken_yx");
+        }
+        return null;
+    }
+
+    /**
+     * description:  获取当前请求人的ID 微信
+     * @param:
+     * @return: java.lang.String
+     * @author LTM
+     * @date: 2023/5/19 15:22
+     */
+    private String getCurrentUserOpenIdWx() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        return request.getHeader("usertoken_wx");
+    }
+
 }

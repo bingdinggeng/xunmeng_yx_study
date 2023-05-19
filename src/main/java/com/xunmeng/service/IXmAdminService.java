@@ -18,5 +18,7 @@ import com.xunmeng.requestqo.LoginQo;
 public interface IXmAdminService extends IService<XmAdmin> {
 
 
-    Response<UserInfo> login(LoginQo requestModel);
+    Response<UserInfo> loginOn(LoginQo requestModel);
+
+    Response loginOut();
 }

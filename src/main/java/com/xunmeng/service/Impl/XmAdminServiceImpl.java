@@ -2,8 +2,10 @@ package com.xunmeng.service.Impl;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.JsonObject;
 import com.xunmeng.base.Response;
 import com.xunmeng.controller.BaseController;
 import com.xunmeng.domain.UserInfo;
@@ -18,7 +20,10 @@ import com.xunmeng.requestqo.UserCacheQo;
 import com.xunmeng.service.IXmAdminService;
 import com.xunmeng.utils.DataUtil;
 import com.xunmeng.utils.RedisStringUtil;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,8 +45,6 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
     @Value("${user.cache.time}")
     private Long userCacheTime;
     @Autowired
-    private IXmAdminService xmAdminService;
-    @Autowired
     private RedisStringUtil redisUtil;
     @Autowired
     private BaseController baseController;
@@ -57,8 +60,8 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
      * @date: 2023/5/15 10:02
      */
     @Override
-    public Response<UserInfo> login(LoginQo requestModel) {
-        List<XmAdmin> listUser = xmAdminService.list(new QueryWrapper<XmAdmin>()
+    public Response<UserInfo> loginOn(LoginQo requestModel) {
+        List<XmAdmin> listUser = this.list(new QueryWrapper<XmAdmin>()
                 .eq("username", requestModel.getNickName())
                 .eq("status", ConstantEnum.NORMAL_XM)
                 .eq("comid", ConstantEnum.COM_XUNMENG));
@@ -78,6 +81,29 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         String uuid = DataUtil.getUUID();
         UserInfo userInfo = cacheUserInfoForAdmin(uuid, null, listUser.get(0), 1);
         return Results.newSuccessResponse(userInfo);
+    }
+
+
+    @Override
+    public Response loginOut() {
+        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + baseController.getCurrentUserOpenId();
+        UserCacheQo cacheQo = null;
+        Object userType = redisUtil.get(cacheKeyUser);
+
+        if(userType != null){
+            cacheQo = JSONObject.parseObject(userType.toString(), UserCacheQo.class);
+        }
+        if(cacheQo != null){
+            if(cacheQo.getRoleType().equals(ConstantEnum.USER_SHOP)){
+                String cacheKey = CacheKeyEnum.SHOP_INFO + cacheQo.getUserId();
+                redisUtil.deleteRedis(cacheKey);
+            }else{
+                String cacheKey = CacheKeyEnum.USER_INFO + cacheQo.getUserId();
+                redisUtil.deleteRedis(cacheKey);
+            }
+        }
+        redisUtil.deleteRedis(cacheKeyUser);
+        return Results.newSuccessResponse(ErrorCodeEnum.SUCESSS);
     }
 
     /**
