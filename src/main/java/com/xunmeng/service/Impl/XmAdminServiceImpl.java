@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.JsonObject;
 import com.xunmeng.base.Response;
 import com.xunmeng.controller.BaseController;
 import com.xunmeng.domain.UserInfo;
@@ -20,15 +19,13 @@ import com.xunmeng.requestqo.UserCacheQo;
 import com.xunmeng.service.IXmAdminService;
 import com.xunmeng.utils.DataUtil;
 import com.xunmeng.utils.RedisStringUtil;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.logging.stdout.StdOutImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.xunmeng.utils.UserLoginConfig.USER_CACHE_TIME;
 
 
 /**
@@ -41,13 +38,10 @@ import java.util.List;
  * @Version 1.0
  */
 @Service
+@RequiredArgsConstructor
 public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> implements IXmAdminService {
-    @Value("${user.cache.time}")
-    private Long userCacheTime;
-    @Autowired
-    private RedisStringUtil redisUtil;
-    @Autowired
-    private BaseController baseController;
+    private final RedisStringUtil redisUtil;
+    private final BaseController baseController;
 
 
     /**
@@ -131,7 +125,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         cacheQo.setUserId(admin.getUserId());
         cacheQo.setRoleType(admin.getRoleId());
 
-        redisUtil.set(cacheKeyUser, JSON.toJSONString(cacheQo), userCacheTime);
+        redisUtil.set(cacheKeyUser, JSON.toJSONString(cacheQo), USER_CACHE_TIME);
 
         String userKey = CacheKeyEnum.USER_INFO + admin.getUserId();
 
@@ -156,7 +150,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         user.setAvatar(admin.getAvatar());
         user.setDataSource(dataSource);
         user.setJoinTime(admin.getJoinTime());
-        redisUtil.set(userKey, JSON.toJSONString(user), userCacheTime);
+        redisUtil.set(userKey, JSON.toJSONString(user), USER_CACHE_TIME);
         return user;
     }
 }

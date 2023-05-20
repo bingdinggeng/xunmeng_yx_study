@@ -8,16 +8,17 @@ import com.xunmeng.enums.ConstantEnum;
 import com.xunmeng.service.IYxAdminInfoService;
 import com.xunmeng.utils.CookiesUtils;
 import com.xunmeng.utils.RedisStringUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.ServletRequestAttributeEvent;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static com.xunmeng.utils.UserLoginConfig.MODEL_TYPE;
+import static com.xunmeng.utils.UserLoginConfig.USER_CACHE_TIME;
 
 
 /**
@@ -30,19 +31,12 @@ import java.util.List;
  * @Version 1.0
  */
 @Controller
+@RequiredArgsConstructor
 public class BaseController {
-    @Autowired
-    private RedisStringUtil redisUtil;
-    @Autowired
-    private IYxAdminInfoService yxAdminInfoService;
-
-    @Value("${user.cache.time}")
-    private static Long userCacheTime;
-
-    @Value("${model.type}")
-    private String modelType;
-
+    private  final RedisStringUtil redisUtil;
+    private  final IYxAdminInfoService yxAdminInfoService;
     private String defaultOpenId =  "sdfsdfsdfqw41231231wer121";
+
 
     /**
      * description: 判断当前登陆人员是否为优选管理员
@@ -64,7 +58,10 @@ public class BaseController {
             adminList = yxAdminInfoService.list(new QueryWrapper<YxAdminInfo>()
                     .eq("data_status", ConstantEnum.NORMAL));
             if (adminList != null && !adminList.isEmpty()) {
-                redisUtil.set(cacheAdminKey, JSON.toJSONString(adminList), userCacheTime);
+                System.out.println(cacheAdminKey);
+                System.out.println(JSON.toJSONString(adminList));
+                System.out.println(USER_CACHE_TIME);
+                redisUtil.set(cacheAdminKey, JSON.toJSONString(adminList), USER_CACHE_TIME);
             }
         }
         if (adminList != null && !adminList.isEmpty()) {
@@ -106,7 +103,7 @@ public class BaseController {
             adminList = yxAdminInfoService.list(new QueryWrapper<YxAdminInfo>()
                     .eq("data_status", ConstantEnum.NORMAL));
             if (adminList != null && !adminList.isEmpty()) {
-                redisUtil.set(cacheServiceKey, JSON.toJSONString(adminList), userCacheTime);
+                redisUtil.set(cacheServiceKey, JSON.toJSONString(adminList), USER_CACHE_TIME);
             }
         }
         return adminList;
@@ -131,7 +128,7 @@ public class BaseController {
             return openId;
         }
 
-        if(StringUtils.isEmpty(openId) && "test".equals(modelType)){
+        if(StringUtils.isEmpty(openId) && "test".equals(MODEL_TYPE)){
             openId = defaultOpenId;
         }
         return openId;

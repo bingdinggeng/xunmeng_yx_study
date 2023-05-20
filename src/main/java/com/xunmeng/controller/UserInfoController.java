@@ -3,15 +3,12 @@ package com.xunmeng.controller;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.xunmeng.base.Response;
 import com.xunmeng.domain.UserInfo;
-import com.xunmeng.enums.CacheKeyEnum;
 import com.xunmeng.requestqo.LoginQo;
-import com.xunmeng.base.Results;
 import com.xunmeng.service.IXmAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.expression.CachedExpressionEvaluator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,9 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "2.0用户管理接口",value = "用户管理接口")
 @ApiSort(value = 2)
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserInfoController{
-    @Autowired
-    private IXmAdminService xmAdminService;
+
+    private final IXmAdminService xmAdminService;
+
+
 
     /**
      * description: 登录入口
