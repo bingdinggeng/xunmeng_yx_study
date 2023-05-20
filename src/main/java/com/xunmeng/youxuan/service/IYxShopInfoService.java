@@ -5,6 +5,7 @@ import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.YxShopInfo;
 import com.xunmeng.youxuan.requestqo.LoginQo;
+import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
 
 /**
  * ClassName: IYxShopInfoService
@@ -18,4 +19,6 @@ import com.xunmeng.youxuan.requestqo.LoginQo;
 public interface IYxShopInfoService extends IService<YxShopInfo> {
 
     Response<UserInfo> loginIn(LoginQo requestModel);
+
+    Response passwordChange(ShopPasswordQo requestModel);
 }

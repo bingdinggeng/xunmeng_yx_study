@@ -4,6 +4,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.requestqo.LoginQo;
+import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
 import com.xunmeng.youxuan.service.IXmAdminService;
 import com.xunmeng.youxuan.service.IYxShopInfoService;
 import io.swagger.annotations.Api;
@@ -58,12 +59,31 @@ public class UserInfoController{
         */
     }
 
+
+    /**
+     * description: 商家密码登录
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.domain.UserInfo>
+     * @author LTM
+     * @date: 2023/5/20 16:03
+     */
     @ApiOperation(value = "商家密码登录",notes = "商家密码登录")
     @PostMapping("/login/shop")
     public Response<UserInfo> shopLogin(@RequestBody @Validated LoginQo requestModel){
 
         //WXInfoDto wxInfoDto = new WXInfoDto();  原代码未开发功能
         return yxShopInfoService.loginIn(requestModel);
+
+    }
+
+
+    @ApiOperation(value = "商家修改登录密码", notes = "商家修改登录密码")
+    @PostMapping("/password/shop/change")
+    public Response passwordChange(@RequestBody @Validated ShopPasswordQo requestModel){
+
+        //WXInfoDto wxInfoDto = new WXInfoDto();  原代码未开发功能
+        return yxShopInfoService.passwordChange(requestModel);
 
     }
 

@@ -13,6 +13,7 @@ import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.mapper.YxShopInfoMapper;
 import com.xunmeng.youxuan.requestqo.LoginQo;
+import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
 import com.xunmeng.youxuan.requestqo.UserCacheQo;
 import com.xunmeng.youxuan.service.IYxShopInfoService;
 import com.xunmeng.youxuan.utils.DataUtil;
@@ -39,6 +40,15 @@ import static com.xunmeng.youxuan.utils.UserLoginUtil.USER_CACHE_TIME;
 public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopInfo>  implements IYxShopInfoService {
 
     private final RedisStringUtil redisUtil;
+
+    /**
+     * description: 商家密码登录
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.domain.UserInfo>
+     * @author LTM
+     * @date: 2023/5/20 16:07
+     */
     @Override
     public Response<UserInfo> loginIn(LoginQo requestModel) {
         List<YxShopInfo> listShop = this.list(new QueryWrapper<YxShopInfo>()
@@ -66,11 +76,56 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
         }
 
         String openId = DataUtil.getUUID();
-        UserInfo userInfo = cacheUserInfoForshop(openId, null, listShop.get(0), 2);
+        UserInfo userInfo = cacheUserInfoForShop(openId, null, listShop.get(0), 2);
         return Results.newSuccessResponse(userInfo);
     }
 
-    private UserInfo cacheUserInfoForshop(String openId, String sessionKey, YxShopInfo shop, int dataSource) {
+    /**
+     * description: 商家修改登录密码
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.youxuan.base.Response
+     * @author LTM
+     * @date: 2023/5/20 16:08
+     */
+    @Override
+    public Response passwordChange(ShopPasswordQo requestModel) {
+        List<YxShopInfo> listShop = this.list(new QueryWrapper<YxShopInfo>()
+                .eq("shop_name",requestModel.getNickName()));
+
+        if(listShop == null || listShop.isEmpty()){
+            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
+        }else if(listShop.size() != 1){
+            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
+        }
+
+        String password = requestModel.getPass()+listShop.get(0).getEncrypt();
+        BCrypt.Result res = BCrypt.verifyer().verify(password.toCharArray(), listShop.get(0).getPassword());
+        if(!res.verified){
+            return Results.newFailedResponse(ErrorCodeEnum.PASSWORD_ERROR);
+        }
+
+        String passwordNew = requestModel.getPassNew() + listShop.get(0).getEncrypt();
+        listShop.get(0).setPassword(BCrypt.withDefaults().hashToString(10,passwordNew.toCharArray()));
+        if(this.updateById(listShop.get(0))){
+            return Results.newFailedResponse(ErrorCodeEnum.SUCCESS);
+        }
+        return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+    }
+
+
+    /**
+     * description: 商家登录缓存
+     * @param:
+     * @param openId
+     * @param sessionKey
+     * @param shop
+     * @param dataSource
+     * @return: com.xunmeng.youxuan.domain.UserInfo
+     * @author LTM
+     * @date: 2023/5/20 16:08
+     */
+    private UserInfo cacheUserInfoForShop(String openId, String sessionKey, YxShopInfo shop, int dataSource) {
 
         String cacheKeyShop;
         if(StringUtils.isNotEmpty(shop.getWxOpenId())){

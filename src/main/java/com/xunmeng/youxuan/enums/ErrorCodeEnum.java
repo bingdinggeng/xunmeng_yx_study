@@ -13,7 +13,7 @@ public enum ErrorCodeEnum {
     /*
     * 成功
     * */
-    SUCESSS(0,"操作失败"),
+    SUCCESS(0, "操作成功"),
     FAIL(1, "失败"),
     PARAM_ERROR(2, "参数错误"),
 
@@ -76,30 +76,41 @@ public enum ErrorCodeEnum {
     WX_REFUND_SUCCESS(80,"SUCCESS"),
     WX_REFUND_PROCESSING(81,"PROCESSING"),
 
-    SYSTEM_ERROR(999, "系统忙，请稍后重试或者联系技术部！")
-    ;
+    SYSTEM_ERROR(999, "系统忙，请稍后重试或者联系技术部！");
 
     private int code;
     private String desc;
 
-    private ErrorCodeEnum(int code, String desc){
+    private ErrorCodeEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
+    }
+
+    public static ErrorCodeEnum getErrorCodeEnum(int code) {
+        ErrorCodeEnum[] values = ErrorCodeEnum.values();
+        for (ErrorCodeEnum errorCodeEnum : values) {
+            if (errorCodeEnum.getCode() == code) {
+                return errorCodeEnum;
+            }
+        }
+        return null;
+    }
+
+    public static String getDesc(int code) {
+        ErrorCodeEnum[] values = ErrorCodeEnum.values();
+        for (ErrorCodeEnum errorCodeEnum : values) {
+            if (errorCodeEnum.getCode() == code) {
+                return errorCodeEnum.getDesc();
+            }
+        }
+        return null;
     }
 
     public int getCode() {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
     public String getDesc() {
         return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 }

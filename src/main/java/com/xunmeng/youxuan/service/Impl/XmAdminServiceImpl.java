@@ -97,7 +97,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
             }
         }
         redisUtil.deleteRedis(cacheKeyUser);
-        return Results.newSuccessResponse(ErrorCodeEnum.SUCESSS);
+        return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
     }
 
     /**
