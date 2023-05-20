@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.xunmeng.utils.UserLoginConfig.USER_CACHE_TIME;
+import static com.xunmeng.utils.UserLoginUtil.USER_CACHE_TIME;
 
 
 /**

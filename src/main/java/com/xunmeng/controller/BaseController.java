@@ -17,8 +17,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static com.xunmeng.utils.UserLoginConfig.MODEL_TYPE;
-import static com.xunmeng.utils.UserLoginConfig.USER_CACHE_TIME;
+import static com.xunmeng.utils.UserLoginUtil.MODEL_TYPE;
+import static com.xunmeng.utils.UserLoginUtil.USER_CACHE_TIME;
 
 
 /**

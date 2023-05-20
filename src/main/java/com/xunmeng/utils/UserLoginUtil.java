@@ -1,7 +1,7 @@
 package com.xunmeng.utils;
 
 /**
- * ClassName: UserLoginConfig
+ * ClassName: UserLoginUtil
  * Package: com.xunmeng.utils
  * Description: 原配置文件中的常量值
  *
@@ -9,7 +9,7 @@ package com.xunmeng.utils;
  * @Create 2023/5/20 10:37
  * @Version 1.0
  */
-public class UserLoginConfig {
+public class UserLoginUtil {
     /**
      * 用户信息保存时间，单位(秒)3小时
      */
