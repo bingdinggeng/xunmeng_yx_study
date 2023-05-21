@@ -51,8 +51,9 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
      */
     @Override
     public Response<UserInfo> loginIn(LoginQo requestModel) {
-        List<YxShopInfo> listShop = this.list(new QueryWrapper<YxShopInfo>()
-                .eq("shop_name",requestModel.getNickName()));
+        String nickName = requestModel.getNickName();
+        List<YxShopInfo> listShop = getListShop(nickName);
+
 
         if(listShop == null || listShop.isEmpty()){
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
@@ -90,8 +91,8 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
      */
     @Override
     public Response passwordChange(ShopPasswordQo requestModel) {
-        List<YxShopInfo> listShop = this.list(new QueryWrapper<YxShopInfo>()
-                .eq("shop_name",requestModel.getNickName()));
+        String nickName = requestModel.getNickName();
+        List<YxShopInfo> listShop = getListShop(nickName);
 
         if(listShop == null || listShop.isEmpty()){
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
@@ -108,7 +109,7 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
         String passwordNew = requestModel.getPassNew() + listShop.get(0).getEncrypt();
         listShop.get(0).setPassword(BCrypt.withDefaults().hashToString(10,passwordNew.toCharArray()));
         if(this.updateById(listShop.get(0))){
-            return Results.newFailedResponse(ErrorCodeEnum.SUCCESS);
+            return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
         return Results.newFailedResponse(ErrorCodeEnum.FAIL);
     }
@@ -157,4 +158,15 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
         redisUtil.set(userKey, JSON.toJSONString(user), USER_CACHE_TIME);
         return user;
     }
+
+    /**
+     *  查询商家名单
+     * @param nickName
+     * @return
+     */
+    private List<YxShopInfo> getListShop(String nickName) {
+        return this.list(new QueryWrapper<YxShopInfo>()
+                .eq("shop_name", nickName));
+    }
+
 }

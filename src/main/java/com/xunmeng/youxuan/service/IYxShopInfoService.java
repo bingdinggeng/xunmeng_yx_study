@@ -18,7 +18,24 @@ import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
  */
 public interface IYxShopInfoService extends IService<YxShopInfo> {
 
+    /**
+     * description: 商家密码登录
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.domain.UserInfo>
+     * @author LTM
+     * @date: 2023/5/21 10:14
+     */
     Response<UserInfo> loginIn(LoginQo requestModel);
 
+
+    /**
+     * description: 商家修改登录密码
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.youxuan.base.Response
+     * @author LTM
+     * @date: 2023/5/21 10:15
+     */
     Response passwordChange(ShopPasswordQo requestModel);
 }

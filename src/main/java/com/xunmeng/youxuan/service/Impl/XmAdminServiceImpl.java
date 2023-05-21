@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xunmeng.youxuan.base.Response;
-import com.xunmeng.youxuan.controller.BaseController;
+import com.xunmeng.youxuan.base.Results;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.XmAdmin;
 import com.xunmeng.youxuan.enums.CacheKeyEnum;
@@ -14,8 +14,8 @@ import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.mapper.XmAdminMapper;
 import com.xunmeng.youxuan.requestqo.LoginQo;
-import com.xunmeng.youxuan.base.Results;
 import com.xunmeng.youxuan.requestqo.UserCacheQo;
+import com.xunmeng.youxuan.service.IBaseService;
 import com.xunmeng.youxuan.service.IXmAdminService;
 import com.xunmeng.youxuan.utils.DataUtil;
 import com.xunmeng.youxuan.utils.RedisStringUtil;
@@ -41,7 +41,7 @@ import static com.xunmeng.youxuan.utils.UserLoginUtil.USER_CACHE_TIME;
 @RequiredArgsConstructor
 public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> implements IXmAdminService {
     private final RedisStringUtil redisUtil;
-    private final BaseController baseController;
+    private final IBaseService baseService;
 
 
     /**
@@ -80,7 +80,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
 
     @Override
     public Response loginOut() {
-        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + baseController.getCurrentUserOpenId();
+        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + baseService.getCurrentUserOpenId();
         UserCacheQo cacheQo = null;
         Object userType = redisUtil.get(cacheKeyUser);
 
@@ -135,9 +135,9 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         user.setOpenId(StringUtils.isNotEmpty(admin.getWxOpenId()) ? admin.getWxOpenId() : openId);
 
         user.setRealName(admin.getNickName());
-        if (baseController.checkAdmin(admin.getUserId())) {
+        if (baseService.checkAdmin(admin.getUserId())) {
             user.setRoleType(ConstantEnum.USER_ADMIN);
-        } else if (baseController.checkService(admin.getUserId())) {
+        } else if (baseService.checkService(admin.getUserId())) {
             user.setRoleType(ConstantEnum.USER_SERVICE);
         } else {
             user.setRoleType(ConstantEnum.USER_XM);
