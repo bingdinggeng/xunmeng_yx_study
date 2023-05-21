@@ -2,11 +2,13 @@ package com.xunmeng.youxuan.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.YxFinancialSettlement;
 import com.xunmeng.youxuan.mapper.YxFinancialSettlementMapper;
 import com.xunmeng.youxuan.requestqo.FinanceShopQo;
 import com.xunmeng.youxuan.responsedto.SumFinanceShopDto;
 import com.xunmeng.youxuan.service.IYxFinancialSettlementService;
+import com.xunmeng.youxuan.utils.BaseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ import org.springframework.stereotype.Service;
 public class YxFinancialSettlementServiceImpl extends ServiceImpl<YxFinancialSettlementMapper, YxFinancialSettlement>
         implements IYxFinancialSettlementService {
 
+    private final BaseUtil baseUtil;
+
+
     /**
      * description: 财务列表，用户查看
      * @param:
@@ -36,6 +41,10 @@ public class YxFinancialSettlementServiceImpl extends ServiceImpl<YxFinancialSet
      */
     @Override
     public Response<SumFinanceShopDto> listForUser(FinanceShopQo requestModel) {
+        UserInfo userInfo = baseUtil.getCurrentUserInfo();
+
+
         return null;
     }
+
 }

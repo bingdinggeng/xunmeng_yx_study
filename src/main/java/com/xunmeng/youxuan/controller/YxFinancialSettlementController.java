@@ -4,7 +4,9 @@ import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.requestqo.FinanceShopQo;
 import com.xunmeng.youxuan.responsedto.SumFinanceShopDto;
+import com.xunmeng.youxuan.responsedto.UserLimitDto;
 import com.xunmeng.youxuan.service.IYxFinancialSettlementService;
+import com.xunmeng.youxuan.service.IYxUserLimitService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +35,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class YxFinancialSettlementController {
 
     private final IYxFinancialSettlementService yxFinancialSettlementService;
+    private final IYxUserLimitService yxUserLimitService;
 
     @ApiOperation(value = "财务列表，用户查看", notes = "财务列表，用户查看")
     @PostMapping("/list/user")
     public Response<SumFinanceShopDto> listForUser(@RequestBody @Validated FinanceShopQo requestModel){
 
         return yxFinancialSettlementService.listForUser(requestModel);
+    }
+
+    @ApiOperation(value = "限额信息：用户查看", notes = "限额信息：用户查看")
+    @PostMapping("/limit/user")
+    public Response<UserLimitDto> limitUserInfo(){
+
+        return yxUserLimitService.limitUserInfo();
     }
 }
