@@ -15,8 +15,8 @@ import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.mapper.XmAdminMapper;
 import com.xunmeng.youxuan.requestqo.LoginQo;
 import com.xunmeng.youxuan.requestqo.UserCacheQo;
-import com.xunmeng.youxuan.service.IBaseService;
 import com.xunmeng.youxuan.service.IXmAdminService;
+import com.xunmeng.youxuan.utils.BaseUtil;
 import com.xunmeng.youxuan.utils.DataUtil;
 import com.xunmeng.youxuan.utils.RedisStringUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ import static com.xunmeng.youxuan.utils.UserLoginUtil.USER_CACHE_TIME;
 @RequiredArgsConstructor
 public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> implements IXmAdminService {
     private final RedisStringUtil redisUtil;
-    private final IBaseService baseService;
+    private final BaseUtil baseUtil;
 
 
     /**
@@ -80,7 +80,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
 
     @Override
     public Response loginOut() {
-        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + baseService.getCurrentUserOpenId();
+        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + baseUtil.getCurrentUserOpenId();
         UserCacheQo cacheQo = null;
         Object userType = redisUtil.get(cacheKeyUser);
 
@@ -135,9 +135,9 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         user.setOpenId(StringUtils.isNotEmpty(admin.getWxOpenId()) ? admin.getWxOpenId() : openId);
 
         user.setRealName(admin.getNickName());
-        if (baseService.checkAdmin(admin.getUserId())) {
+        if (baseUtil.checkAdmin(admin.getUserId())) {
             user.setRoleType(ConstantEnum.USER_ADMIN);
-        } else if (baseService.checkService(admin.getUserId())) {
+        } else if (baseUtil.checkService(admin.getUserId())) {
             user.setRoleType(ConstantEnum.USER_SERVICE);
         } else {
             user.setRoleType(ConstantEnum.USER_XM);

@@ -1,18 +1,14 @@
-package com.xunmeng.youxuan.service.Impl;
+package com.xunmeng.youxuan.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xunmeng.youxuan.domain.YxAdminInfo;
 import com.xunmeng.youxuan.enums.CacheKeyEnum;
 import com.xunmeng.youxuan.enums.ConstantEnum;
-import com.xunmeng.youxuan.service.IBaseService;
 import com.xunmeng.youxuan.service.IYxAdminInfoService;
-import com.xunmeng.youxuan.utils.CookiesUtils;
-import com.xunmeng.youxuan.utils.RedisStringUtil;
-import com.xunmeng.youxuan.utils.UserLoginUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -20,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * ClassName: BaseServiceImpl
+ * ClassName: BaseUtil
  * Package: com.xunmeng.youxuan.service.Impl
  * Description:
  *
@@ -28,9 +24,9 @@ import java.util.List;
  * @Create 2023/5/21 10:54
  * @Version 1.0
  */
-@Service
+@Component
 @RequiredArgsConstructor
-public class BaseServiceImpl implements IBaseService {
+public class BaseUtil{
     private  final RedisStringUtil redisUtil;
     private  final IYxAdminInfoService yxAdminInfoService;
     private String defaultOpenId =  "sdfsdfsdfqw41231231wer121";
@@ -44,7 +40,6 @@ public class BaseServiceImpl implements IBaseService {
      * @author LTM
      * @date: 2023/5/17 15:13
      */
-    @Override
     public  boolean checkAdmin(Integer userId){
         String cacheAdminKey = CacheKeyEnum.USER_ADMIN_LIST;
         Object adminObject = redisUtil.get(cacheAdminKey);
@@ -75,7 +70,6 @@ public class BaseServiceImpl implements IBaseService {
      * @author LTM
      * @date: 2023/5/17 15:37
      */
-    @Override
     public boolean checkService(Integer userId) {
         List<YxAdminInfo> adminList = getServiceList();
         return adminList != null && adminList.stream()
@@ -89,7 +83,6 @@ public class BaseServiceImpl implements IBaseService {
      * @author LTM
      * @date: 2023/5/17 15:27
      */
-    @Override
     public List<YxAdminInfo> getServiceList(){
         String cacheServiceKey = CacheKeyEnum.USER_SERVICE_LIST;
         Object adminObject = redisUtil.get(cacheServiceKey);
@@ -114,7 +107,6 @@ public class BaseServiceImpl implements IBaseService {
      * @author LTM
      * @date: 2023/5/19 15:28
      */
-    @Override
     public String getCurrentUserOpenId(){
 
         String openId = getCurrentUserOpenIdForHtml();
