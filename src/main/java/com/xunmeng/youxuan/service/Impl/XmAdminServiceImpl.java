@@ -12,11 +12,11 @@ import com.xunmeng.youxuan.domain.XmAdmin;
 import com.xunmeng.youxuan.enums.CacheKeyEnum;
 import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
+import com.xunmeng.youxuan.logic.UserLogic;
 import com.xunmeng.youxuan.mapper.XmAdminMapper;
 import com.xunmeng.youxuan.requestqo.LoginQo;
 import com.xunmeng.youxuan.requestqo.UserCacheQo;
 import com.xunmeng.youxuan.service.IXmAdminService;
-import com.xunmeng.youxuan.utils.BaseUtil;
 import com.xunmeng.youxuan.utils.DataUtil;
 import com.xunmeng.youxuan.utils.RedisStringUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ import static com.xunmeng.youxuan.utils.UserLoginUtil.USER_CACHE_TIME;
 @RequiredArgsConstructor
 public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> implements IXmAdminService {
     private final RedisStringUtil redisUtil;
-    private final BaseUtil baseUtil;
+    private final UserLogic userLogic;
 
 
     /**
@@ -80,7 +80,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
 
     @Override
     public Response loginOut() {
-        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + baseUtil.getCurrentUserOpenId();
+        String cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + userLogic.getCurrentUserOpenId();
         UserCacheQo cacheQo = null;
         Object userType = redisUtil.get(cacheKeyUser);
 
@@ -135,9 +135,9 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         user.setOpenId(StringUtils.isNotEmpty(admin.getWxOpenId()) ? admin.getWxOpenId() : openId);
 
         user.setRealName(admin.getNickName());
-        if (baseUtil.checkAdmin(admin.getUserId())) {
+        if (userLogic.checkAdmin(admin.getUserId())) {
             user.setRoleType(ConstantEnum.USER_ADMIN);
-        } else if (baseUtil.checkService(admin.getUserId())) {
+        } else if (userLogic.checkService(admin.getUserId())) {
             user.setRoleType(ConstantEnum.USER_SERVICE);
         } else {
             user.setRoleType(ConstantEnum.USER_XM);
