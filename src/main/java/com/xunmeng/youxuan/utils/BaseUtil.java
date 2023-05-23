@@ -3,13 +3,16 @@ package com.xunmeng.youxuan.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.xunmeng.youxuan.domain.UserInfo;
+import com.xunmeng.youxuan.domain.XmAdmin;
 import com.xunmeng.youxuan.domain.YxAdminInfo;
+import com.xunmeng.youxuan.domain.YxShopInfo;
 import com.xunmeng.youxuan.enums.CacheKeyEnum;
 import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.requestqo.UserCacheQo;
+import com.xunmeng.youxuan.service.IXmAdminService;
 import com.xunmeng.youxuan.service.IYxAdminInfoService;
+import com.xunmeng.youxuan.service.IYxShopInfoService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static com.xunmeng.youxuan.utils.UserLoginUtil.MODEL_TYPE;
+import static com.xunmeng.youxuan.utils.UserLoginUtil.USER_CACHE_TIME;
 
 /**
  * ClassName: BaseUtil
@@ -33,9 +39,16 @@ import java.util.List;
 public class BaseUtil{
     private  final RedisStringUtil redisUtil;
     private  final IYxAdminInfoService yxAdminInfoService;
+    private final IXmAdminService xmAdminService;
+    private final IYxShopInfoService yxShopInfoService;
     private String defaultOpenId =  "sdfsdfsdfqw41231231wer121";
     private Integer defaultId = 17;
     private int roleType = ConstantEnum.USER_SHOP;
+
+    /**
+     * TODO 可能有多线程安全问题
+     */
+    private int dataSource = 1;
 
 
     /**
@@ -125,7 +138,7 @@ public class BaseUtil{
             return openId;
         }
 
-        if(StringUtils.isEmpty(openId) && "test".equals(UserLoginUtil.MODEL_TYPE)){
+        if(StringUtils.isEmpty(openId) && "test".equals(MODEL_TYPE)){
             openId = defaultOpenId;
         }
         return openId;
@@ -167,112 +180,143 @@ public class BaseUtil{
      * @param:
      * @return: com.xunmeng.youxuan.domain.UserInfo
      * @author LTM
-     * @date: 2023/5/21 11:32
+     * @date: 2023/5/23 8:31
      */
-    //public UserInfo getCurrentUserInfo(){
-    //    UserInfo user = null;
-    //
-    //    int dataSource = 1;
-    //    String openId = getCurrentUserOpenIdForHtml();
-    //    if (StringUtils.isEmpty(openId)) {
-    //        openId = getCurrentUserOpenIdWx();
-    //        if (StringUtils.isEmpty(openId)) {
-    //            if (StringUtils.isEmpty(openId) && "test".equals(UserLoginUtil.MODEL_TYPE)) {
-    //                openId = defaultOpenId;
-    //                String userKey = CacheKeyEnum.USER_TOKEN_INFO + openId;
-    //                UserCacheQo cacheQo = new UserCacheQo();
-    //                cacheQo.setUserId(defaultId);
-    //                cacheQo.setRoleType(roleType);
-    //                redisUtil.set(userKey, JSON.toJSONString(cacheQo), UserLoginUtil.USER_CACHE_TIME);
-    //            }
-    //        } else {
-    //            dataSource = 2;
-    //        }
-    //    }
-    //
-    //    return null;
-    //}
-    public UserInfo getCurrentUserInfo() {
+   public UserInfo getCurrentUserInfo(){
+        dataSource = 1;
         String openId = getOpenId();
-        if (StringUtils.isEmpty(openId)) {
+
+        if(StringUtils.isEmpty(openId)){
             return null;
         }
 
         UserCacheQo cacheQo = getUserCache(openId);
-        if (cacheQo == null) {
+        if(cacheQo == null){
             return null;
         }
 
         return getUserInfoByRoleType(cacheQo);
-    }
+   }
 
-    private String getOpenId() {
-        String openId = getCurrentUserOpenIdForHtml();
-        if (StringUtils.isEmpty(openId)) {
-            openId = getCurrentUserOpenIdWx();
-        }
 
-        if (StringUtils.isEmpty(openId) && "test".equals(modelType)) {
-            setDefaultUserCache();
-            openId = defaultOpenId;
-        }
+    /**
+     * 拆分原方法中的获取OpenId
+     * @return
+     */
+   private String getOpenId(){
+       String openId = getCurrentUserOpenIdForHtml();
+       if(StringUtils.isEmpty(openId)){
+           openId = getCurrentUserOpenIdWx();
+           dataSource = 2;
+       }
 
-        return openId;
-    }
+       if(StringUtils.isEmpty(openId) && "test".equals(MODEL_TYPE)){
+           setDefaultUserCache();;
+           openId = defaultOpenId;
+       }
+       return openId;
+   }
 
-    private void setDefaultUserCache() {
-        String userKey = CacheKeyEnum.USER_TOKEN_INFO + defaultOpenId;
-        UserCacheQo cacheQo = new UserCacheQo();
-        cacheQo.setUserId(defaultId);
-        cacheQo.setRoleType(roleType);
-        redisUtil.set(userKey, JSON.toJSONString(cacheQo), userCacheTime);
-    }
+    /**
+     * 拆分原getCurrentUserInfo方法中的设置默认缓存
+     */
+   private void setDefaultUserCache(){
+       String userKey = CacheKeyEnum.USER_TOKEN_INFO + defaultOpenId;
+       UserCacheQo cacheQo = new UserCacheQo();
+       cacheQo.setUserId(defaultId);
+       cacheQo.setRoleType(roleType);
+       redisUtil.set(userKey, JSON.toJSONString(cacheQo), USER_CACHE_TIME);
+   }
 
-    private UserCacheQo getUserCache(String openId) {
-        String userKey = CacheKeyEnum.USER_TOKEN_INFO + openId;
-        Object userCacheObject = redisUtil.get(userKey);
 
-        return userCacheObject != null
-                ? JSONObject.parseObject(userCacheObject.toString(), UserCacheQo.class)
-                : null;
-    }
+    /**
+     *  拆分原getCurrentUserInfo方法中的获取用户缓存
+     * @param openId
+     * @return
+     */
+   private UserCacheQo getUserCache(String openId){
+       String userKey = CacheKeyEnum.USER_TOKEN_INFO + openId;
+       Object userCacheObject = redisUtil.get(userKey);
 
-    private UserInfo getUserInfoByRoleType(UserCacheQo cacheQo) {
-        switch (cacheQo.getRoleType()) {
-            case ConstantEnum.USER_XM:
-            case ConstantEnum.USER_ADMIN:
-            case ConstantEnum.USER_SERVICE:
-                return getUserInfo(cacheQo, CacheKeyEnum.USER_INFO, iXmAdminService);
-            case ConstantEnum.USER_SHOP:
-                return getUserInfo(cacheQo, CacheKeyEnum.SHOP_INFO, iYxShopInfoService);
-            default:
-                return null;
-        }
-    }
+       return userCacheObject != null
+               ? JSONObject.parseObject(userCacheObject.toString(), UserCacheQo.class)
+               : null;
+   }
 
-    private <T> UserInfo getUserInfo(UserCacheQo cacheQo, CacheKeyEnum cacheKeyEnum, IService<T> service) {
-        String cacheKey = cacheKeyEnum + cacheQo.getUserId().toString();
-        Object userObject = redisUtil.get(cacheKey);
 
-        if (userObject != null) {
-            return JSONObject.parseObject(userObject.toString(), UserInfo.class);
-        }
+    /**
+     *  返回user
+     * @param cacheQo
+     * @return
+     */
+   private UserInfo getUserInfoByRoleType(UserCacheQo cacheQo){
+       String cacheKey;
+       Object userObject;
+       if (cacheQo.getRoleType().equals(ConstantEnum.USER_XM)  || cacheQo.getRoleType().equals(ConstantEnum.USER_ADMIN)
+               || cacheQo.getRoleType().equals(ConstantEnum.USER_SERVICE)){
+           cacheKey = CacheKeyEnum.USER_TOKEN_INFO + cacheQo.getUserId();
+           userObject = redisUtil.get(cacheKey);
 
-        T info = service.getById(cacheQo.getUserId());
-        UserInfo user = extractUserInfo(info);
+           if(userObject != null){
+               return JSONObject.parseObject(userObject.toString(), UserInfo.class);
+           }
 
-        if (user != null) {
-            redisUtil.set(cacheKey, JSON.toJSONString(user), userCacheTime);
-        }
+           XmAdmin userInfo = xmAdminService.getById(cacheQo.getUserId());
+           if (userInfo != null && userInfo.getStatus() != null && userInfo.getStatus().equals(ConstantEnum.NORMAL_XM)){
+               UserInfo user = extractUserInfo(userInfo);
 
+               if (checkAdmin(userInfo.getUserId())) {
+                   user.setRoleType(ConstantEnum.USER_ADMIN);
+               }else if(checkService(userInfo.getUserId())){
+                   user.setRoleType(ConstantEnum.USER_SERVICE);
+               } else {
+                   user.setRoleType(ConstantEnum.USER_XM);
+               }
+
+               redisUtil.set(cacheKey, JSON.toJSONString(user), USER_CACHE_TIME);
+               return user;
+           }
+       }else if (cacheQo.getRoleType().equals(ConstantEnum.USER_SHOP)){
+           cacheKey = CacheKeyEnum.SHOP_INFO + cacheQo.getUserId();
+           userObject = redisUtil.get(cacheKey);
+
+           if(userObject != null){
+               return JSONObject.parseObject(userObject.toString(), UserInfo.class);
+           }
+
+           YxShopInfo shopInfo = yxShopInfoService.getById(cacheQo.getUserId());
+           if (shopInfo != null && shopInfo.getDataStatus() != null && !shopInfo.getDataStatus()
+                   .equals(ConstantEnum.SHOP_STATUS_CLOSE)){
+               UserInfo user = extractUserInfo(shopInfo);
+               redisUtil.set(cacheKey, JSON.toJSONString(user), USER_CACHE_TIME);
+               return user;
+           }
+       }
+       return null;
+   }
+
+    private UserInfo extractUserInfo(XmAdmin admin) {
+        UserInfo user = new UserInfo();
+        user.setMobileNumber(admin.getPhone());
+        user.setNickName(admin.getUserName());
+        user.setOpenId(admin.getWxOpenId());
+        user.setRealName(admin.getNickName());
+        user.setUserId(admin.getUserId().longValue());
+        user.setAvatar(admin.getAvatar());
+        user.setDataSource(dataSource);
         return user;
     }
 
-    private <T> UserInfo extractUserInfo(T info) {
-        // Implement extraction of UserInfo from info
-        // The method should be dependent on the type of info
-        // You will likely need to implement two versions of this method:
-        // one for XmAdmin and one for YxShopInfo
-        // Depending on how you organize your code, you may want to make this an interface method
+    private UserInfo extractUserInfo(YxShopInfo shopInfo) {
+        UserInfo user = new UserInfo();
+        user.setMobileNumber(shopInfo.getShopPhone());
+        user.setNickName(shopInfo.getShopName());
+        user.setOpenId(shopInfo.getWxOpenId());
+        user.setRealName(shopInfo.getRealName());
+        user.setRoleType(ConstantEnum.USER_SHOP);
+        user.setUserId(shopInfo.getShopId());
+        user.setAvatar(shopInfo.getAvatar());
+        user.setDataSource(dataSource);
+        return user;
     }
 }
