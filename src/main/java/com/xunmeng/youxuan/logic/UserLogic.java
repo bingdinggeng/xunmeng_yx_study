@@ -37,10 +37,6 @@ public class UserLogic {
     private String defaultOpenId =  "sdfsdfsdfqw41231231wer121";
 
 
-    /**
-     * TODO 可能有多线程安全问题
-     */
-    private int dataSource = 1;
 
 
     /**

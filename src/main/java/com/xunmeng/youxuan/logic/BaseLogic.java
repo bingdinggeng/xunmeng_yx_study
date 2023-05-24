@@ -46,8 +46,8 @@ public class BaseLogic {
     private  final IXmAdminService xmAdminService;
     private  final IYxShopInfoService yxShopInfoService;
     private String defaultOpenId =  "sdfsdfsdfqw41231231wer121";
-    private Integer defaultId = 17;
-    private int roleType = ConstantEnum.USER_SHOP;
+    private Integer defaultId = 23896;
+    private int roleType = ConstantEnum.USER_SERVICE;
 
 
     /**
