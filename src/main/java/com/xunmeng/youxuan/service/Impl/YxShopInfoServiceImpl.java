@@ -2,7 +2,11 @@ package com.xunmeng.youxuan.service.Impl;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.base.Results;
@@ -13,10 +17,13 @@ import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.mapper.YxShopInfoMapper;
 import com.xunmeng.youxuan.requestqo.LoginQo;
+import com.xunmeng.youxuan.requestqo.ShopListQo;
 import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
 import com.xunmeng.youxuan.requestqo.UserCacheQo;
+import com.xunmeng.youxuan.responsedto.ShopDto;
 import com.xunmeng.youxuan.service.IYxShopInfoService;
 import com.xunmeng.youxuan.utils.DataUtil;
+import com.xunmeng.youxuan.utils.PageUtil;
 import com.xunmeng.youxuan.utils.RedisStringUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -112,6 +119,32 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
             return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
         return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+    }
+
+    @Override
+    public Response<IPage<ShopDto>> getShopList(ShopListQo requestModel) {
+        PageUtil.initRequestPage(requestModel);
+        IPage<ShopDto> result = null;
+        Page<YxShopInfo> page = new Page<>(requestModel.getPageIndex(), requestModel.getPageSize());
+
+        LambdaQueryWrapper<YxShopInfo> queryWrapper = new LambdaQueryWrapper<YxShopInfo>()
+                .like(StringUtils.isNotBlank(requestModel.getShopName()), YxShopInfo::getShopName,
+                        requestModel.getShopName())
+                .like(requestModel.getShopCategoryId() != null && requestModel.getShopCategoryId() > 0,
+                        YxShopInfo::getShopCategoryId, "," + requestModel.getShopCategoryId() + ",")
+                .eq(YxShopInfo::getDataStatus, ConstantEnum.SHOP_STATUS_PASSED)
+                .orderByAsc(YxShopInfo::getMonthSells);
+
+        IPage<YxShopInfo> dataList = this.page(page, queryWrapper);
+        if (dataList != null && dataList.getRecords() != null && dataList.getRecords().size() > 0) {
+            result = new Page<ShopDto>()
+                    .setTotal(dataList.getTotal())
+                    .setCurrent(dataList.getCurrent())
+                    .setPages(dataList.getPages())
+                    .setSize(dataList.getSize())
+                    .setRecords(JSONArray.parseArray(JSONArray.toJSONString(dataList.getRecords()), ShopDto.class));
+        }
+        return Results.newSuccessResponse(result);
     }
 
 
