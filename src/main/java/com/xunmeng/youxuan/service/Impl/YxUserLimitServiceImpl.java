@@ -62,10 +62,10 @@ public class YxUserLimitServiceImpl extends ServiceImpl<YxUserLimitMapper, YxUse
                 // 是本日
                 userLimitDto.setDayMoney(limit.getDayMoney());
             }
-            userLimitDto.setDayMax(limit.getDayMax());
-            userLimitDto.setMonthMax(limit.getMonthMax());
-            userLimitDto.setMonthStr(yearMonth);
-            userLimitDto.setDayStr(yearMonthDay);
+            userLimitDto.setDayMax(limit.getDayMax())
+                    .setMonthMax(limit.getMonthMax())
+                    .setMonthStr(yearMonth)
+                    .setDayStr(yearMonthDay);
         }
         return Results.newSuccessResponse(userLimitDto);
     }

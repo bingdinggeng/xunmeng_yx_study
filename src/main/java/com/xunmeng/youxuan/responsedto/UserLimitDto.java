@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel("用户限额信息类")
+@Accessors(chain = true)
 public class UserLimitDto {
     @ApiModelProperty(value = "月：如2020-01",example = "2020-01")
     private String monthStr;

@@ -2,6 +2,7 @@ package com.xunmeng.youxuan.requestqo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -15,6 +16,7 @@ import java.io.Serializable;
  * @Version 1.0
  */
 @Data
+@Accessors(chain = true)
 public class UserCacheQo implements Serializable {
     private Integer userId;
 

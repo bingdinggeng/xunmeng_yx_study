@@ -9,6 +9,7 @@ import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.base.Results;
 import com.xunmeng.youxuan.domain.YxCategory;
 import com.xunmeng.youxuan.enums.ConstantEnum;
+import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.mapper.YxCategoryMapper;
 import com.xunmeng.youxuan.requestqo.CommonRequestIdPageQo;
 import com.xunmeng.youxuan.responsedto.CategoryDto;
@@ -30,34 +31,34 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class YxCategoryServiceImpl extends ServiceImpl<YxCategoryMapper, YxCategory> implements IYxCategoryService {
-
-    //TODO 返回值在查询失败处理上可以优化
-
     @Override
     public Response<IPage<CategoryDto>> getCategoryList(CommonRequestIdPageQo requestModel) {
         PageUtil.initRequestPage(requestModel);
-        IPage<CategoryDto> result = null;
-        Page<YxCategory> page = new Page<>(requestModel.getPageIndex(),requestModel.getPageSize());
 
         LambdaQueryWrapper<YxCategory> queryWrapper = new LambdaQueryWrapper<YxCategory>()
                 .eq(YxCategory::getShopId, requestModel.getId())
                 .eq(YxCategory::getDataStatus, ConstantEnum.NORMAL);
 
-        if(StringUtils.isNotEmpty(requestModel.getSortType()) && ConstantEnum.SORT_DESC.equalsIgnoreCase(requestModel.getSortType())){
+        if (StringUtils.isNotEmpty(requestModel.getSortType()) && ConstantEnum.SORT_DESC.equalsIgnoreCase(requestModel.getSortType())) {
             queryWrapper = queryWrapper.orderByDesc(YxCategory::getSortNum);
-        }else{
+        } else {
             queryWrapper = queryWrapper.orderByAsc(YxCategory::getSortNum);
         }
 
-        IPage<YxCategory> dataList = this.page(page, queryWrapper);
-        if(dataList != null && dataList.getRecords() != null && dataList.getRecords().size() > 0){
-            result = new Page<CategoryDto>()
-                    .setCurrent(dataList.getCurrent())
-                    .setTotal(dataList.getTotal())
-                    .setRecords(JSONArray.parseArray(JSONArray.toJSONString(dataList.getRecords()), CategoryDto.class))
-                    .setSize(dataList.getSize())
-                    .setPages(dataList.getPages());
+        IPage<YxCategory> dataList = this.page(new Page<>(requestModel.getPageIndex(), requestModel.getPageSize())
+                , queryWrapper);
+
+        if (dataList == null || dataList.getRecords() == null || dataList.getRecords().isEmpty()) {
+            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
         }
+
+        IPage<CategoryDto> result = new Page<CategoryDto>()
+                .setCurrent(dataList.getCurrent())
+                .setTotal(dataList.getTotal())
+                .setRecords(JSONArray.parseArray(JSONArray.toJSONString(dataList.getRecords()), CategoryDto.class))
+                .setSize(dataList.getSize())
+                .setPages(dataList.getPages());
+
         return Results.newSuccessResponse(result);
     }
 }

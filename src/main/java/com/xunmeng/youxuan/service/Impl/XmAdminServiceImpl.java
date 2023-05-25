@@ -121,18 +121,18 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
             cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + openId;
         }
 
-        UserCacheQo cacheQo = new UserCacheQo();
-        cacheQo.setUserId(admin.getUserId());
-        cacheQo.setRoleType(admin.getRoleId());
+        UserCacheQo cacheQo = new UserCacheQo()
+                .setUserId(admin.getUserId())
+                .setRoleType(admin.getRoleId());
 
         redisUtil.set(cacheKeyUser, JSON.toJSONString(cacheQo), USER_CACHE_TIME);
 
         String userKey = CacheKeyEnum.USER_INFO + admin.getUserId();
 
-        UserInfo user = new UserInfo();
-        user.setMobileNumber(admin.getPhone());
-        user.setNickName(admin.getUserName());
-        user.setOpenId(StringUtils.isNotEmpty(admin.getWxOpenId()) ? admin.getWxOpenId() : openId);
+        UserInfo user = new UserInfo()
+                .setMobileNumber(admin.getPhone())
+                .setNickName(admin.getUserName())
+                .setOpenId(StringUtils.isNotEmpty(admin.getWxOpenId()) ? admin.getWxOpenId() : openId);
 
         user.setRealName(admin.getNickName());
         if (userLogic.checkAdmin(admin.getUserId())) {
@@ -143,10 +143,10 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
             user.setRoleType(ConstantEnum.USER_XM);
         }
 
-        user.setUserId(admin.getUserId().longValue());
-        user.setAvatar(admin.getAvatar());
-        user.setDataSource(dataSource);
-        user.setJoinTime(admin.getJoinTime());
+        user.setUserId(admin.getUserId().longValue())
+                .setAvatar(admin.getAvatar())
+                .setDataSource(dataSource)
+                .setJoinTime(admin.getJoinTime());
         redisUtil.set(userKey, JSON.toJSONString(user), USER_CACHE_TIME);
         return user;
     }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -20,6 +21,7 @@ import java.io.Serializable;
 
 @Data
 @ApiModel(value = "UserInfo对象",description = "")
+@Accessors(chain = true)
 public class UserInfo implements Serializable {
     @ApiModelProperty(value = "自动增长ID")
     @TableId(value = "user_id",type = IdType.AUTO)

@@ -304,21 +304,21 @@ public class BaseLogic {
         UserInfo user = new UserInfo();
         if (info instanceof XmAdmin) {
             XmAdmin admin = (XmAdmin) info;
-            user.setMobileNumber(admin.getPhone());
-            user.setNickName(admin.getUserName());
-            user.setOpenId(admin.getWxOpenId());
-            user.setRealName(admin.getNickName());
-            user.setUserId(admin.getUserId().longValue());
-            user.setAvatar(admin.getAvatar());
+            user.setMobileNumber(admin.getPhone())
+                    .setNickName(admin.getUserName())
+                    .setOpenId(admin.getWxOpenId())
+                    .setRealName(admin.getNickName())
+                    .setUserId(admin.getUserId().longValue())
+                    .setAvatar(admin.getAvatar());
         } else if (info instanceof YxShopInfo) {
             YxShopInfo shopInfo = (YxShopInfo) info;
-            user.setMobileNumber(shopInfo.getShopPhone());
-            user.setNickName(shopInfo.getShopName());
-            user.setOpenId(shopInfo.getWxOpenId());
-            user.setRealName(shopInfo.getRealName());
-            user.setRoleType(ConstantEnum.USER_SHOP);
-            user.setUserId(shopInfo.getShopId());
-            user.setAvatar(shopInfo.getAvatar());
+            user.setMobileNumber(shopInfo.getShopPhone())
+                    .setNickName(shopInfo.getShopName())
+                    .setOpenId(shopInfo.getWxOpenId())
+                    .setRealName(shopInfo.getRealName())
+                    .setRoleType(ConstantEnum.USER_SHOP)
+                    .setUserId(shopInfo.getShopId())
+                    .setAvatar(shopInfo.getAvatar());
         }
         user.setDataSource(dataSource);
         return user;
