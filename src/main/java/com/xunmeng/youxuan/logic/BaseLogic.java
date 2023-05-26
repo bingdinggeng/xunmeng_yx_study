@@ -3,12 +3,14 @@ package com.xunmeng.youxuan.logic;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xunmeng.youxuan.base.BusinessException;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.XmAdmin;
 import com.xunmeng.youxuan.domain.YxAdminInfo;
 import com.xunmeng.youxuan.domain.YxShopInfo;
 import com.xunmeng.youxuan.enums.CacheKeyEnum;
 import com.xunmeng.youxuan.enums.ConstantEnum;
+import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.requestqo.UserCacheQo;
 import com.xunmeng.youxuan.service.IXmAdminService;
 import com.xunmeng.youxuan.service.IYxAdminInfoService;
@@ -322,5 +324,19 @@ public class BaseLogic {
         }
         user.setDataSource(dataSource);
         return user;
+    }
+
+    /**
+     * description: 重复提交check
+     * @param:
+     * @param key
+     * @return: void
+     * @author LTM
+     * @date: 2023/5/25 17:50
+     */
+    public void checkRepeat(String key){
+        if(!redisUtil.setAbsent(key, "true", 5)){
+            throw new BusinessException(ErrorCodeEnum.REPEAT_COMMIT_ERROR);
+        }
     }
 }

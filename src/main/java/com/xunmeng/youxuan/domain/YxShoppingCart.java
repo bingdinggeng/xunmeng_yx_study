@@ -2,6 +2,7 @@ package com.xunmeng.youxuan.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * ClassName: YxShippingCart
+ * ClassName: YxShoppingCart
  * Package: com.xunmeng.domain
  * Description:
  *
@@ -25,7 +26,8 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="YxShippingCart对象", description="")
-public class YxShippingCart implements Serializable {
+@TableName("yx_shipping_cart")
+public class YxShoppingCart implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自动增长ID")

@@ -1,5 +1,6 @@
 package com.xunmeng.youxuan.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -83,6 +84,28 @@ public class RedisStringUtil {
         try{
             return redisTemplate.delete(cacheKey);
         }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * description:
+     * @param:
+     * @param key
+     * @param value
+     * @param ttl
+     * @return: boolean
+     * @author LTM
+     * @date: 2023/5/25 17:28
+     */
+    public boolean setAbsent(String key, String value, long ttl) {
+        try {
+            if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
+                return false;
+            }
+            return redisTemplate.opsForValue().setIfAbsent(key, value, ttl, TimeUnit.SECONDS);
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
