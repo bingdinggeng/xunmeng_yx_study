@@ -1,16 +1,18 @@
 package com.xunmeng.youxuan.base;
 
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
+import lombok.Data;
 
 /**
  * ClassName: BusinessException
  * Package: com.xunmeng.youxuan.base
- * Description:
+ * Description:  全局异常统一处理类
  *
  * @Author LTM
  * @Create 2023/5/25 17:50
  * @Version 1.0
  */
+@Data
 public class BusinessException extends RuntimeException {
     private ErrorCodeEnum errorCodeEnum;
     private  String msg;

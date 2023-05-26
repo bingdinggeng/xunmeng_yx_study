@@ -11,6 +11,7 @@ import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.logic.BaseLogic;
 import com.xunmeng.youxuan.mapper.YxShippingCartMapper;
+import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
 import com.xunmeng.youxuan.service.IYxProductInfoService;
 import com.xunmeng.youxuan.service.IYxShoppingCartService;
@@ -83,7 +84,7 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                     .setProductImage(productInfo.getImagePath())
                     .setDataSource(ConstantEnum.NORMAL)
                     .setAddTime(LocalDateTime.now())
-                    //如果为空保持不变
+                    //商品附加备注信息   如果为空保持不变
                     .setOtherSku(StringUtils.isNotEmpty(requestModel.getOtherSku()) ?
                             requestModel.getOtherSku() : updateModel.getOtherSku());
         }
@@ -93,5 +94,31 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
             return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
         return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+    }
+
+    @Override
+    public Response clearCart(CommonIdQo requestModel) {
+        UserInfo userInfo = baseLogic.getCurrentUserInfo();
+        if(userInfo == null){
+            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+        }
+
+        List<YxShoppingCart> carts = this.list(new LambdaQueryWrapper<YxShoppingCart>()
+                .eq(YxShoppingCart::getUserId, userInfo.getUserId())
+                .eq(YxShoppingCart::getDataStatus, ConstantEnum.NORMAL)
+                .eq(YxShoppingCart::getShopId, requestModel.getId()));
+
+        if(carts != null && carts.size() > 0){
+            carts.forEach(item ->{
+                item.setDataStatus(ConstantEnum.DELETE);
+                item.setUpdateTime(LocalDateTime.now());
+                    }
+            );
+            if(this.updateBatchById(carts)){
+                return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+            }
+            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+        }
+        return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
     }
 }
