@@ -2,6 +2,7 @@ package com.xunmeng.youxuan.controller;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
 import com.xunmeng.youxuan.service.IYxShoppingCartService;
@@ -43,5 +44,11 @@ public class YxShoppingCartController {
     @PostMapping("/clear")
     public Response clearCart(@RequestBody @Validated CommonIdQo requestModel){
         return yxShoppingCartService.clearCart(requestModel);
+    }
+
+    @ApiOperation(value = "购物车商品加减", notes = "购物车商品加减")
+    @PostMapping("number")
+    public Response cartNumberChange(@RequestBody @Validated CartNumQo requestModel) {
+        return yxShoppingCartService.cartNumberChanger(requestModel);
     }
 }

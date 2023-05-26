@@ -3,6 +3,7 @@ package com.xunmeng.youxuan.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.domain.YxShoppingCart;
+import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
 
@@ -35,4 +36,14 @@ public interface IYxShoppingCartService extends IService<YxShoppingCart> {
      * @date: 2023/5/26 15:02
      */
     Response clearCart(CommonIdQo requestModel);
+
+    /**
+     * description: /cart/number  购物车商品增减
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.youxuan.base.Response
+     * @author LTM
+     * @date: 2023/5/26 15:54
+     */
+    Response cartNumberChanger(CartNumQo requestModel);
 }

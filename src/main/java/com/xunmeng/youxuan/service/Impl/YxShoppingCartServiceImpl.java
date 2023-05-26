@@ -11,6 +11,7 @@ import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.logic.BaseLogic;
 import com.xunmeng.youxuan.mapper.YxShippingCartMapper;
+import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
 import com.xunmeng.youxuan.service.IYxProductInfoService;
@@ -120,5 +121,35 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
             return Results.newFailedResponse(ErrorCodeEnum.FAIL);
         }
         return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public Response cartNumberChanger(CartNumQo requestModel) {
+        YxShoppingCart cart = this.getById(requestModel.getCartId());
+        System.out.println(cart);
+        if(cart == null){
+            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
+        }
+
+        YxProductInfo productInfo = yxProductInfoService.getById(cart.getProductId());
+        if(productInfo == null || productInfo.getStock() == null){
+            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+        }
+
+        int buyCount = requestModel.getNumber() + cart.getBuyCount();
+        if(productInfo.getStock() < buyCount){
+            return  Results.newFailedResponse(ErrorCodeEnum.FAIL.getCode(), productInfo.getProductName()
+                    + "商品超出库存，无法加入购物车！");
+        }
+        if(buyCount < 0){
+            cart.setDataStatus(ConstantEnum.DELETE);
+        }else {
+            cart.setBuyCount(buyCount);
+        }
+
+        if(this.updateById(cart)){
+            return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+        }
+        return Results.newFailedResponse(ErrorCodeEnum.FAIL);
     }
 }
