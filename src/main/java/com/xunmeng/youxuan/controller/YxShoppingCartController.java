@@ -5,6 +5,7 @@ import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
+import com.xunmeng.youxuan.responsedto.ShoppingCartSumDto;
 import com.xunmeng.youxuan.service.IYxShoppingCartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,8 +48,14 @@ public class YxShoppingCartController {
     }
 
     @ApiOperation(value = "购物车商品加减", notes = "购物车商品加减")
-    @PostMapping("number")
+    @PostMapping("/number")
     public Response cartNumberChange(@RequestBody @Validated CartNumQo requestModel) {
         return yxShoppingCartService.cartNumberChanger(requestModel);
+    }
+
+    @ApiOperation(value = "查看购物车商品列表,ID:shopId", notes = "查看购物车商品列表,ID:shopId")
+    @PostMapping("/list")
+    public Response<ShoppingCartSumDto> cartList(@RequestBody @Validated CommonIdQo requestModel){
+        return yxShoppingCartService.cartList(requestModel);
     }
 }

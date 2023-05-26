@@ -1,5 +1,6 @@
 package com.xunmeng.youxuan.service.Impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xunmeng.youxuan.base.Response;
@@ -14,12 +15,15 @@ import com.xunmeng.youxuan.mapper.YxShippingCartMapper;
 import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
+import com.xunmeng.youxuan.responsedto.ShoppingCartDto;
+import com.xunmeng.youxuan.responsedto.ShoppingCartSumDto;
 import com.xunmeng.youxuan.service.IYxProductInfoService;
 import com.xunmeng.youxuan.service.IYxShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -151,5 +155,33 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
             return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
         return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+    }
+
+    @Override
+    public Response<ShoppingCartSumDto> cartList(CommonIdQo requestModel) {
+        UserInfo userInfo = baseLogic.getCurrentUserInfo();
+        if(userInfo == null){
+            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+        }
+
+        ShoppingCartSumDto resultData = null;
+        List<ShoppingCartDto> result = null;
+        List<YxShoppingCart> carts = this.list(new LambdaQueryWrapper<YxShoppingCart>()
+                .eq(YxShoppingCart::getUserId, userInfo.getUserId())
+                .eq(YxShoppingCart::getDataStatus, ConstantEnum.NORMAL)
+                .eq(YxShoppingCart::getShopId, requestModel.getId()));
+
+        if(carts != null && carts.size() > 0){
+            BigDecimal sumPrice = BigDecimal.ZERO;
+            for(YxShoppingCart data : carts){
+                sumPrice = sumPrice.add(data.getPrice().multiply(new BigDecimal(data.getBuyCount())));
+            }
+            result = JSONArray.parseArray(JSONArray.toJSONString(carts), ShoppingCartDto.class);
+
+            resultData = new ShoppingCartSumDto()
+                    .setCartList(result)
+                    .setSumPrice(sumPrice);
+        }
+        return Results.newSuccessResponse(resultData);
     }
 }
