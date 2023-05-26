@@ -5,6 +5,8 @@ import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
+import com.xunmeng.youxuan.responsedto.CartShopDto;
+import com.xunmeng.youxuan.responsedto.CartUserDto;
 import com.xunmeng.youxuan.responsedto.ShoppingCartSumDto;
 import com.xunmeng.youxuan.service.IYxShoppingCartService;
 import io.swagger.annotations.Api;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * ClassName: YxShoppingCartController
@@ -57,5 +61,17 @@ public class YxShoppingCartController {
     @PostMapping("/list")
     public Response<ShoppingCartSumDto> cartList(@RequestBody @Validated CommonIdQo requestModel){
         return yxShoppingCartService.cartList(requestModel);
+    }
+
+    @ApiOperation(value = "查看购物车中商铺及选中商品数量", notes = "查看购物车中商铺及选中商品数量")
+    @PostMapping("/shop/list")
+    public Response<List<CartShopDto>> cartShopList(){
+        return yxShoppingCartService.cartShopList();
+    }
+
+    @ApiOperation(value = "用户购物车所有信息", notes = "用户购物车所有信息")
+    @PostMapping("/user/list")
+    public Response<List<CartUserDto>> userCartList(){
+        return yxShoppingCartService.userCartList();
     }
 }

@@ -6,7 +6,11 @@ import com.xunmeng.youxuan.domain.YxShoppingCart;
 import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
+import com.xunmeng.youxuan.responsedto.CartShopDto;
+import com.xunmeng.youxuan.responsedto.CartUserDto;
 import com.xunmeng.youxuan.responsedto.ShoppingCartSumDto;
+
+import java.util.List;
 
 /**
  * ClassName: IYxShoppingCartService
@@ -57,4 +61,22 @@ public interface IYxShoppingCartService extends IService<YxShoppingCart> {
      * @date: 2023/5/26 16:45
      */
     Response<ShoppingCartSumDto> cartList(CommonIdQo requestModel);
+
+    /**
+     * description: 查看购物车中商铺及选中商品数量
+     * @param:
+     * @return: com.xunmeng.youxuan.base.Response<java.util.List<com.xunmeng.youxuan.responsedto.CartShopDto>>
+     * @author LTM
+     * @date: 2023/5/26 18:00
+     */
+    Response<List<CartShopDto>> cartShopList();
+
+    /**
+     * description:  用户购物车所有信息
+     * @param:
+     * @return: com.xunmeng.youxuan.base.Response<java.util.List<com.xunmeng.youxuan.responsedto.CartUserDto>>
+     * @author LTM
+     * @date: 2023/5/26 18:01
+     */
+    Response<List<CartUserDto>> userCartList();
 }

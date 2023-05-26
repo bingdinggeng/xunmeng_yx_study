@@ -15,6 +15,8 @@ import com.xunmeng.youxuan.mapper.YxShippingCartMapper;
 import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
+import com.xunmeng.youxuan.responsedto.CartShopDto;
+import com.xunmeng.youxuan.responsedto.CartUserDto;
 import com.xunmeng.youxuan.responsedto.ShoppingCartDto;
 import com.xunmeng.youxuan.responsedto.ShoppingCartSumDto;
 import com.xunmeng.youxuan.service.IYxProductInfoService;
@@ -183,5 +185,17 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                     .setSumPrice(sumPrice);
         }
         return Results.newSuccessResponse(resultData);
+    }
+
+    @Override
+    public Response<List<CartShopDto>> cartShopList() {
+
+
+        return null;
+    }
+
+    @Override
+    public Response<List<CartUserDto>> userCartList() {
+        return null;
     }
 }
