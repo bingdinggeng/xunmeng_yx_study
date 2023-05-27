@@ -41,16 +41,16 @@ public class YxShopCategoryServiceImpl extends ServiceImpl<YxShopCategoryMapper,
         List<ShopCategoryDto> result = null;
         Object shopCategoryList = redisUtil.get(cacheKey);
 
-        if(shopCategoryList != null){
+        if (shopCategoryList != null) {
             result = JSONArray.parseArray(shopCategoryList.toString(), ShopCategoryDto.class);
-        }else{
+        } else {
             List<YxShopCategory> shopList = this.list(new QueryWrapper<YxShopCategory>()
                     .eq("data_status", ConstantEnum.NORMAL).orderByAsc("sort_num"));
 
-            if(shopList !=null && !shopList.isEmpty()){
+            if (shopList != null && !shopList.isEmpty()) {
                 result = JSONArray.parseArray(JSONArray.toJSONString(shopList), ShopCategoryDto.class);
             }
-            redisUtil.set(cacheKey, JSONArray.toJSONString(shopList),USER_CACHE_TIME);
+            redisUtil.set(cacheKey, JSONArray.toJSONString(shopList), USER_CACHE_TIME);
         }
         return Results.newSuccessResponse(result);
     }

@@ -60,7 +60,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
                 .eq("status", ConstantEnum.NORMAL_XM)
                 .eq("comid", ConstantEnum.COM_XUNMENG));
 
-        if (listUser == null ||  listUser.isEmpty()) {
+        if (listUser == null || listUser.isEmpty()) {
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
         } else if (listUser.size() != 1) {
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
@@ -84,14 +84,14 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         UserCacheQo cacheQo = null;
         Object userType = redisUtil.get(cacheKeyUser);
 
-        if(userType != null){
+        if (userType != null) {
             cacheQo = JSONObject.parseObject(userType.toString(), UserCacheQo.class);
         }
-        if(cacheQo != null){
-            if(cacheQo.getRoleType().equals(ConstantEnum.USER_SHOP)){
+        if (cacheQo != null) {
+            if (cacheQo.getRoleType().equals(ConstantEnum.USER_SHOP)) {
                 String cacheKey = CacheKeyEnum.SHOP_INFO + cacheQo.getUserId();
                 redisUtil.deleteRedis(cacheKey);
-            }else{
+            } else {
                 String cacheKey = CacheKeyEnum.USER_INFO + cacheQo.getUserId();
                 redisUtil.deleteRedis(cacheKey);
             }
@@ -117,7 +117,7 @@ public class XmAdminServiceImpl extends ServiceImpl<XmAdminMapper, XmAdmin> impl
         String cacheKeyUser;
         if (StringUtils.isNotEmpty(admin.getWxOpenId())) {
             cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + admin.getWxOpenId();
-        }else{
+        } else {
             cacheKeyUser = CacheKeyEnum.USER_TOKEN_INFO + openId;
         }
 

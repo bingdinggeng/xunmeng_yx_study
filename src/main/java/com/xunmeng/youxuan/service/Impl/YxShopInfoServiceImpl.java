@@ -44,14 +44,15 @@ import static com.xunmeng.youxuan.utils.UserLoginUtil.USER_CACHE_TIME;
  */
 @Service
 @RequiredArgsConstructor
-public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopInfo>  implements IYxShopInfoService {
+public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopInfo> implements IYxShopInfoService {
 
     private final RedisStringUtil redisUtil;
 
     /**
      * description: 商家密码登录
-     * @param:
+     *
      * @param requestModel
+     * @param:
      * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.domain.UserInfo>
      * @author LTM
      * @date: 2023/5/20 16:07
@@ -62,21 +63,21 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
         List<YxShopInfo> listShop = getListShop(nickName);
 
 
-        if(listShop == null || listShop.isEmpty()){
+        if (listShop == null || listShop.isEmpty()) {
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
-        }else if(listShop.size() !=1){
+        } else if (listShop.size() != 1) {
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
         }
 
         String password = requestModel.getPass() + listShop.get(0).getEncrypt();
         BCrypt.Result res = BCrypt.verifyer().verify(password.toCharArray(), listShop.get(0).getPassword());
-        if( !res.verified){
+        if (!res.verified) {
             return Results.newFailedResponse(ErrorCodeEnum.PASSWORD_ERROR);
         }
 
         // 不清楚极光推送标识是啥，先不动原代码逻辑
-        if(StringUtils.isNotBlank(requestModel.getRegistrationId()) && !requestModel.getRegistrationId()
-                .equals(listShop.get(0).getRegistrationId())){
+        if (StringUtils.isNotBlank(requestModel.getRegistrationId()) && !requestModel.getRegistrationId()
+                .equals(listShop.get(0).getRegistrationId())) {
             YxShopInfo updateInfo = new YxShopInfo()
                     .setShopId(listShop.get(0).getShopId())
                     .setRegistrationId(requestModel.getRegistrationId());
@@ -90,8 +91,9 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
 
     /**
      * description: 商家修改登录密码
-     * @param:
+     *
      * @param requestModel
+     * @param:
      * @return: com.xunmeng.youxuan.base.Response
      * @author LTM
      * @date: 2023/5/20 16:08
@@ -101,21 +103,21 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
         String nickName = requestModel.getNickName();
         List<YxShopInfo> listShop = getListShop(nickName);
 
-        if(listShop == null || listShop.isEmpty()){
+        if (listShop == null || listShop.isEmpty()) {
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
-        }else if(listShop.size() != 1){
+        } else if (listShop.size() != 1) {
             return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
         }
 
-        String password = requestModel.getPass()+listShop.get(0).getEncrypt();
+        String password = requestModel.getPass() + listShop.get(0).getEncrypt();
         BCrypt.Result res = BCrypt.verifyer().verify(password.toCharArray(), listShop.get(0).getPassword());
-        if(!res.verified){
+        if (!res.verified) {
             return Results.newFailedResponse(ErrorCodeEnum.PASSWORD_ERROR);
         }
 
         String passwordNew = requestModel.getPassNew() + listShop.get(0).getEncrypt();
-        listShop.get(0).setPassword(BCrypt.withDefaults().hashToString(10,passwordNew.toCharArray()));
-        if(this.updateById(listShop.get(0))){
+        listShop.get(0).setPassword(BCrypt.withDefaults().hashToString(10, passwordNew.toCharArray()));
+        if (this.updateById(listShop.get(0))) {
             return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
         return Results.newFailedResponse(ErrorCodeEnum.FAIL);
@@ -153,11 +155,12 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
 
     /**
      * description: 商家登录缓存
-     * @param:
+     *
      * @param openId
      * @param sessionKey
      * @param shop
      * @param dataSource
+     * @param:
      * @return: com.xunmeng.youxuan.domain.UserInfo
      * @author LTM
      * @date: 2023/5/20 16:08
@@ -165,9 +168,9 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
     private UserInfo cacheUserInfoForShop(String openId, String sessionKey, YxShopInfo shop, int dataSource) {
 
         String cacheKeyShop;
-        if(StringUtils.isNotEmpty(shop.getWxOpenId())){
+        if (StringUtils.isNotEmpty(shop.getWxOpenId())) {
             cacheKeyShop = CacheKeyEnum.USER_TOKEN_INFO + shop.getWxOpenId();
-        }else{
+        } else {
             cacheKeyShop = CacheKeyEnum.USER_TOKEN_INFO + openId;
         }
 
@@ -195,7 +198,8 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
     }
 
     /**
-     *  查询商家名单
+     * 查询商家名单
+     *
      * @param nickName
      * @return
      */

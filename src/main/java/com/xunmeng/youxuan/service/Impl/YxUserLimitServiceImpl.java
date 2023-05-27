@@ -38,27 +38,27 @@ public class YxUserLimitServiceImpl extends ServiceImpl<YxUserLimitMapper, YxUse
     public Response<UserLimitDto> limitUserInfo() {
 
         UserInfo userInfo = baseUtil.getCurrentUserInfo();
-        if(userInfo == null){
+        if (userInfo == null) {
             return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }
-        if(userInfo.getRoleType() == ConstantEnum.USER_SHOP){
+        if (userInfo.getRoleType() == ConstantEnum.USER_SHOP) {
             return Results.newFailedResponse(ErrorCodeEnum.PERMISSION_DENIED);
         }
 
         UserLimitDto userLimitDto = null;
         List<YxUserLimit> userLimits = this.list(new QueryWrapper<YxUserLimit>()
                 .eq("user_id", userInfo.getUserId()));
-        if(userLimits != null && userLimits.size() > 0){
+        if (userLimits != null && userLimits.size() > 0) {
             userLimitDto = new UserLimitDto();
             // 获取当前月和日
             String yearMonth = DateTimeUtil.getYearMonth();
             String yearMonthDay = DateTimeUtil.getYearMonthDay();
             YxUserLimit limit = userLimits.get(0);
-            if(yearMonth.equals(limit.getMonthStr())){
+            if (yearMonth.equals(limit.getMonthStr())) {
                 // 判断是本月
                 userLimitDto.setMonthMoney(limit.getMonthMoney());
             }
-            if(yearMonthDay.equals(limit.getDayStr())){
+            if (yearMonthDay.equals(limit.getDayStr())) {
                 // 是本日
                 userLimitDto.setDayMoney(limit.getDayMoney());
             }
