@@ -5,6 +5,7 @@ import com.xunmeng.youxuan.base.Response;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.requestqo.LoginQo;
 import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
+import com.xunmeng.youxuan.requestqo.WXShopInfoQo;
 import com.xunmeng.youxuan.service.IXmAdminService;
 import com.xunmeng.youxuan.service.IYxShopInfoService;
 import io.swagger.annotations.Api;
@@ -102,4 +103,9 @@ public class UserInfoController{
     }
 
 
+    @ApiOperation(value = "店注册", notes = "店注册")
+    @PostMapping("/register/shop")
+    public Response<UserInfo> registerForShop(@RequestBody @Validated WXShopInfoQo requestModel) {
+        return yxShopInfoService.registerForShop(requestModel);
+    }
 }

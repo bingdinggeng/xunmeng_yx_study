@@ -8,6 +8,7 @@ import com.xunmeng.youxuan.domain.YxShopInfo;
 import com.xunmeng.youxuan.requestqo.LoginQo;
 import com.xunmeng.youxuan.requestqo.ShopListQo;
 import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
+import com.xunmeng.youxuan.requestqo.WXShopInfoQo;
 import com.xunmeng.youxuan.responsedto.ShopDto;
 
 /**
@@ -51,4 +52,14 @@ public interface IYxShopInfoService extends IService<YxShopInfo> {
      * @date: 2023/5/24 14:54
      */
     Response<IPage<ShopDto>> getShopList(ShopListQo requestModel);
+
+    /**
+     * description:  /user/register/shop  店铺注册
+     * @param:
+     * @param requestModel
+     * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.domain.UserInfo>
+     * @author LTM
+     * @date: 2023/5/27 14:50
+     */
+    Response<UserInfo> registerForShop(WXShopInfoQo requestModel);
 }

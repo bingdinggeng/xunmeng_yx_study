@@ -18,12 +18,12 @@ import java.util.List;
 @Data
 @ApiModel("用户购物车列表信息")
 public class CartUserDto {
-    @ApiModelProperty(value = "门店ID，如：1")
+    @ApiModelProperty(value = "门店ID，如：1", position = 1)
     private Long shopId;
 
-    @ApiModelProperty(value = "门店名称",example = "奶茶店")
+    @ApiModelProperty(value = "门店名称",example = "奶茶店", position = 2)
     private String shopName;
 
-    @ApiModelProperty(value = "购物车商品列表")
+    @ApiModelProperty(value = "购物车商品列表", position = 3)
     private List<ShoppingCartDto> products;
 }

@@ -16,10 +16,7 @@ import com.xunmeng.youxuan.enums.CacheKeyEnum;
 import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import com.xunmeng.youxuan.mapper.YxShopInfoMapper;
-import com.xunmeng.youxuan.requestqo.LoginQo;
-import com.xunmeng.youxuan.requestqo.ShopListQo;
-import com.xunmeng.youxuan.requestqo.ShopPasswordQo;
-import com.xunmeng.youxuan.requestqo.UserCacheQo;
+import com.xunmeng.youxuan.requestqo.*;
 import com.xunmeng.youxuan.responsedto.ShopDto;
 import com.xunmeng.youxuan.service.IYxShopInfoService;
 import com.xunmeng.youxuan.utils.DataUtil;
@@ -150,6 +147,11 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
                 .setRecords(JSONArray.parseArray(JSONArray.toJSONString(dataList.getRecords()), ShopDto.class));
 
         return Results.newSuccessResponse(result);
+    }
+
+    @Override
+    public Response<UserInfo> registerForShop(WXShopInfoQo requestModel) {
+        return null;
     }
 
 

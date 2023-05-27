@@ -245,8 +245,10 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
         }
 
         List<Long> shopIds = shoppingCarts.stream().map(YxShoppingCart::getShopId).collect(Collectors.toList());
+        // 查询出订单中出现的shopId的商店的具体信息，  测试服yx_shop_Info就不全，只有4个店的信息
         List<YxShopInfo> shopInfos = yxShopInfoService.list(new LambdaQueryWrapper<YxShopInfo>()
                 .in(YxShopInfo::getShopId, shopIds));
+        // 店铺Id对应该店铺的所有订单
         Map<Long, List<YxShoppingCart>> shopMap = shoppingCarts.stream()
                 .collect(Collectors.groupingBy(YxShoppingCart::getShopId));
 
@@ -262,7 +264,8 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                     }
 
                     List<ShoppingCartDto> products = shopMap.get(shopId).stream()
-                            .map(cart -> JSONArray.parseObject(JSONArray.toJSONString(cart), ShoppingCartDto.class))
+                            .map(cart -> JSONArray.parseObject(JSONArray.toJSONString(cart)
+                                    , ShoppingCartDto.class))
                             .collect(Collectors.toList());
                     cartUserDto.setProducts(products);
 
