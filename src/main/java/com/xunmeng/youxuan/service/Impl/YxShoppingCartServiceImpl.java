@@ -208,7 +208,7 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
 
         // 购物车为空返回
         if (CollectionUtils.isEmpty(shoppingCarts)) {
-            return Result.newSuccessResponse(null);
+            return Result.newFailedResponse(ErrorCodeEnum.SHOPPING_CART_ISEMPTY);
         }
 
         List<YxShopInfo> shopInfos = yxShopInfoService.list(new LambdaQueryWrapper<YxShopInfo>()

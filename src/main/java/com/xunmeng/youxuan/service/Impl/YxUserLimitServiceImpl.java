@@ -30,13 +30,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class YxUserLimitServiceImpl extends ServiceImpl<YxUserLimitMapper, YxUserLimit> implements IYxUserLimitService {
 
-    private final BaseLogic baseUtil;
+    private final BaseLogic baseLogic;
 
 
     @Override
     public Result<UserLimitDto> limitUserInfo() {
 
-        UserInfo userInfo = baseUtil.getCurrentUserInfo();
+        UserInfo userInfo = baseLogic.getCurrentUserInfo();
         if (userInfo == null) {
             return Result.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }

@@ -45,4 +45,14 @@ public class DateTimeUtil {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDateTime.now().format(df);
     }
+
+    /**
+     *  将LocalDateTime转换为 2020-01-02形式
+     * @param date
+     * @return
+     */
+    public static String getTimeYMDByLocalDateTime(LocalDateTime date) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(dtf);
+    }
 }

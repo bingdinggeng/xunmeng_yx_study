@@ -66,6 +66,7 @@ public enum ErrorCodeEnum {
     ORDER_PAY_TIME_ERROR(710,"订单付款时间不正确！"),
     ORDER_SHOP_CLOSE(711,"店铺已经打烊！"),
     ORDER_PRODUCT_SHELF_OUT(712,"已下架！"),
+    ORDER_INFO_EMPTY(713,"该时间段内没有订单!"),
 
 
     AFTER_SALE_TIME_ERROR(801,"订单售后时间错误"),
