@@ -3,11 +3,10 @@ package com.xunmeng.youxuan.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.requestqo.CommonRequestIdPageQo;
 import com.xunmeng.youxuan.responsedto.CategoryDto;
 import com.xunmeng.youxuan.service.IYxCategoryService;
-import com.xunmeng.youxuan.service.IYxProductInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +39,7 @@ public class YxCategoryController {
     @ApiOperation(value = "店铺分类列表,ID:shopId", notes = "店铺分类列表,ID:shopId")
     @PostMapping("/list")
     @ApiOperationSupport(order = 1)
-    public Response<IPage<CategoryDto>> getCategoryList(@RequestBody @Validated CommonRequestIdPageQo requestModel){
+    public Result<IPage<CategoryDto>> getCategoryList(@RequestBody @Validated CommonRequestIdPageQo requestModel){
         return yxCategoryService.getCategoryList(requestModel);
     }
 }

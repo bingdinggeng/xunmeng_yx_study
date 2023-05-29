@@ -1,7 +1,7 @@
 package com.xunmeng.youxuan.controller;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.requestqo.FinanceShopQo;
 import com.xunmeng.youxuan.responsedto.SumFinanceShopDto;
 import com.xunmeng.youxuan.responsedto.UserLimitDto;
@@ -39,14 +39,14 @@ public class YxFinancialSettlementController {
 
     @ApiOperation(value = "财务列表，用户查看", notes = "财务列表，用户查看")
     @PostMapping("/list/user")
-    public Response<SumFinanceShopDto> listForUser(@RequestBody @Validated FinanceShopQo requestModel){
+    public Result<SumFinanceShopDto> listForUser(@RequestBody @Validated FinanceShopQo requestModel){
 
         return yxFinancialSettlementService.listForUser(requestModel);
     }
 
     @ApiOperation(value = "限额信息：用户查看", notes = "限额信息：用户查看")
     @PostMapping("/limit/user")
-    public Response<UserLimitDto> limitUserInfo(){
+    public Result<UserLimitDto> limitUserInfo(){
 
         return yxUserLimitService.limitUserInfo();
     }

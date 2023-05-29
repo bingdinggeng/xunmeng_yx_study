@@ -1,4 +1,4 @@
-package com.xunmeng.youxuan.base;
+package com.xunmeng.youxuan.config;
 
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
 import org.springframework.beans.factory.annotation.Autowired;

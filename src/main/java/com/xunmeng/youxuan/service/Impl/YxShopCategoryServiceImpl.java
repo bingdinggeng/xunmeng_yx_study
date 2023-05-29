@@ -3,8 +3,7 @@ package com.xunmeng.youxuan.service.Impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xunmeng.youxuan.base.Response;
-import com.xunmeng.youxuan.base.Results;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.YxShopCategory;
 import com.xunmeng.youxuan.enums.CacheKeyEnum;
 import com.xunmeng.youxuan.enums.ConstantEnum;
@@ -36,7 +35,7 @@ public class YxShopCategoryServiceImpl extends ServiceImpl<YxShopCategoryMapper,
     private final RedisStringUtil redisUtil;
 
     @Override
-    public Response<List<ShopCategoryDto>> getCategoryList() {
+    public Result<List<ShopCategoryDto>> getCategoryList() {
         String cacheKey = CacheKeyEnum.SHOP_CATEGORY;
         List<ShopCategoryDto> result = null;
         Object shopCategoryList = redisUtil.get(cacheKey);
@@ -52,6 +51,6 @@ public class YxShopCategoryServiceImpl extends ServiceImpl<YxShopCategoryMapper,
             }
             redisUtil.set(cacheKey, JSONArray.toJSONString(shopList), USER_CACHE_TIME);
         }
-        return Results.newSuccessResponse(result);
+        return Result.newSuccessResponse(result);
     }
 }

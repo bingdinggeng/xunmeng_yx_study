@@ -2,7 +2,7 @@ package com.xunmeng.youxuan.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.requestqo.ShopListQo;
 import com.xunmeng.youxuan.responsedto.ShopDto;
 import com.xunmeng.youxuan.service.IYxShopInfoService;
@@ -37,7 +37,7 @@ public class YxShopInfoController {
 
     @ApiOperation(value = "商家列表：用户", notes = "商家列表：用户")
     @PostMapping("/list")
-    public Response<IPage<ShopDto>> getShopList(@RequestBody @Validated ShopListQo requestModel){
+    public Result<IPage<ShopDto>> getShopList(@RequestBody @Validated ShopListQo requestModel){
 
         return yxShopInfoService.getShopList(requestModel);
     }

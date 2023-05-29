@@ -1,7 +1,7 @@
 package com.xunmeng.youxuan.controller;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.requestqo.CartNumQo;
 import com.xunmeng.youxuan.requestqo.CommonIdQo;
 import com.xunmeng.youxuan.requestqo.ShoppingCartAddQo;
@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,37 +42,37 @@ public class YxShoppingCartController {
 
     @ApiOperation(value = "加入购物车", notes = "加入购物车")
     @PostMapping("/add")
-    public Response addToCart(@RequestBody @Validated ShoppingCartAddQo requestModel) {
+    public Result<T> addToCart(@RequestBody @Validated ShoppingCartAddQo requestModel) {
         return yxShoppingCartService.addToCart(requestModel);
     }
 
     @ApiOperation(value = "清空购物车,ID:shopId", notes = "清空购物车,ID:shopId")
     @PostMapping("/clear")
-    public Response clearCart(@RequestBody @Validated CommonIdQo requestModel){
+    public Result<T> clearCart(@RequestBody @Validated CommonIdQo requestModel){
         return yxShoppingCartService.clearCart(requestModel);
     }
 
     @ApiOperation(value = "购物车商品加减", notes = "购物车商品加减")
     @PostMapping("/number")
-    public Response cartNumberChange(@RequestBody @Validated CartNumQo requestModel) {
+    public Result<T> cartNumberChange(@RequestBody @Validated CartNumQo requestModel) {
         return yxShoppingCartService.cartNumberChanger(requestModel);
     }
 
     @ApiOperation(value = "查看购物车商品列表,ID:shopId", notes = "查看购物车商品列表,ID:shopId")
     @PostMapping("/list")
-    public Response<ShoppingCartSumDto> cartList(@RequestBody @Validated CommonIdQo requestModel){
+    public Result<ShoppingCartSumDto> cartList(@RequestBody @Validated CommonIdQo requestModel){
         return yxShoppingCartService.cartList(requestModel);
     }
 
     @ApiOperation(value = "查看购物车中商铺及选中商品数量", notes = "查看购物车中商铺及选中商品数量")
     @PostMapping("/shop/list")
-    public Response<List<CartShopDto>> cartShopList(){
+    public Result<List<CartShopDto>> cartShopList(){
         return yxShoppingCartService.cartShopList();
     }
 
     @ApiOperation(value = "用户购物车所有信息", notes = "用户购物车所有信息")
     @PostMapping("/user/list")
-    public Response<List<CartUserDto>> userCartList(){
+    public Result<List<CartUserDto>> userCartList(){
         return yxShoppingCartService.userCartList();
     }
 }

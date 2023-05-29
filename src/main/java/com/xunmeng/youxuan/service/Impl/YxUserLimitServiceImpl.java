@@ -2,13 +2,12 @@ package com.xunmeng.youxuan.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xunmeng.youxuan.base.Response;
-import com.xunmeng.youxuan.base.Results;
-import com.xunmeng.youxuan.logic.BaseLogic;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.YxUserLimit;
 import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
+import com.xunmeng.youxuan.logic.BaseLogic;
 import com.xunmeng.youxuan.mapper.YxUserLimitMapper;
 import com.xunmeng.youxuan.responsedto.UserLimitDto;
 import com.xunmeng.youxuan.service.IYxUserLimitService;
@@ -35,14 +34,14 @@ public class YxUserLimitServiceImpl extends ServiceImpl<YxUserLimitMapper, YxUse
 
 
     @Override
-    public Response<UserLimitDto> limitUserInfo() {
+    public Result<UserLimitDto> limitUserInfo() {
 
         UserInfo userInfo = baseUtil.getCurrentUserInfo();
         if (userInfo == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+            return Result.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }
         if (userInfo.getRoleType() == ConstantEnum.USER_SHOP) {
-            return Results.newFailedResponse(ErrorCodeEnum.PERMISSION_DENIED);
+            return Result.newFailedResponse(ErrorCodeEnum.PERMISSION_DENIED);
         }
 
         UserLimitDto userLimitDto = null;
@@ -67,6 +66,6 @@ public class YxUserLimitServiceImpl extends ServiceImpl<YxUserLimitMapper, YxUse
                     .setMonthStr(yearMonth)
                     .setDayStr(yearMonthDay);
         }
-        return Results.newSuccessResponse(userLimitDto);
+        return Result.newSuccessResponse(userLimitDto);
     }
 }

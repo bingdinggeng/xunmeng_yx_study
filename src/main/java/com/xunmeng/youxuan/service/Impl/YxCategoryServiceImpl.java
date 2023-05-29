@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xunmeng.youxuan.base.Response;
-import com.xunmeng.youxuan.base.Results;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.YxCategory;
 import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
@@ -32,14 +31,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class YxCategoryServiceImpl extends ServiceImpl<YxCategoryMapper, YxCategory> implements IYxCategoryService {
     @Override
-    public Response<IPage<CategoryDto>> getCategoryList(CommonRequestIdPageQo requestModel) {
+    public Result<IPage<CategoryDto>> getCategoryList(CommonRequestIdPageQo requestModel) {
         PageUtil.initRequestPage(requestModel);
 
         LambdaQueryWrapper<YxCategory> queryWrapper = new LambdaQueryWrapper<YxCategory>()
                 .eq(YxCategory::getShopId, requestModel.getId())
                 .eq(YxCategory::getDataStatus, ConstantEnum.NORMAL);
 
-        if (StringUtils.isNotEmpty(requestModel.getSortType()) && ConstantEnum.SORT_DESC.equalsIgnoreCase(requestModel.getSortType())) {
+        if (StringUtils.isNotEmpty(requestModel.getSortType()) && ConstantEnum.SORT_DESC
+                .equalsIgnoreCase(requestModel.getSortType())) {
             queryWrapper = queryWrapper.orderByDesc(YxCategory::getSortNum);
         } else {
             queryWrapper = queryWrapper.orderByAsc(YxCategory::getSortNum);
@@ -49,7 +49,7 @@ public class YxCategoryServiceImpl extends ServiceImpl<YxCategoryMapper, YxCateg
                 , queryWrapper);
 
         if (dataList == null || dataList.getRecords() == null || dataList.getRecords().isEmpty()) {
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL);
         }
 
         IPage<CategoryDto> result = new Page<CategoryDto>()
@@ -59,6 +59,6 @@ public class YxCategoryServiceImpl extends ServiceImpl<YxCategoryMapper, YxCateg
                 .setSize(dataList.getSize())
                 .setPages(dataList.getPages());
 
-        return Results.newSuccessResponse(result);
+        return Result.newSuccessResponse(result);
     }
 }

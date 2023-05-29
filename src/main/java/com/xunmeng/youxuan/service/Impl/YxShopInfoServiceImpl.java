@@ -8,8 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xunmeng.youxuan.base.Response;
-import com.xunmeng.youxuan.base.Results;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.YxShopInfo;
 import com.xunmeng.youxuan.enums.CacheKeyEnum;
@@ -24,6 +23,7 @@ import com.xunmeng.youxuan.utils.PageUtil;
 import com.xunmeng.youxuan.utils.RedisStringUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,31 +45,23 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
 
     private final RedisStringUtil redisUtil;
 
-    /**
-     * description: 商家密码登录
-     *
-     * @param requestModel
-     * @param:
-     * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.domain.UserInfo>
-     * @author LTM
-     * @date: 2023/5/20 16:07
-     */
+
     @Override
-    public Response<UserInfo> loginIn(LoginQo requestModel) {
+    public Result<UserInfo> loginIn(LoginQo requestModel) {
         String nickName = requestModel.getNickName();
         List<YxShopInfo> listShop = getListShop(nickName);
 
 
         if (listShop == null || listShop.isEmpty()) {
-            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
+            return Result.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
         } else if (listShop.size() != 1) {
-            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
+            return Result.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
         }
 
         String password = requestModel.getPass() + listShop.get(0).getEncrypt();
         BCrypt.Result res = BCrypt.verifyer().verify(password.toCharArray(), listShop.get(0).getPassword());
         if (!res.verified) {
-            return Results.newFailedResponse(ErrorCodeEnum.PASSWORD_ERROR);
+            return Result.newFailedResponse(ErrorCodeEnum.PASSWORD_ERROR);
         }
 
         // 不清楚极光推送标识是啥，先不动原代码逻辑
@@ -83,45 +75,37 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
 
         String openId = DataUtil.getUUID();
         UserInfo userInfo = cacheUserInfoForShop(openId, null, listShop.get(0), 2);
-        return Results.newSuccessResponse(userInfo);
+        return Result.newSuccessResponse(userInfo);
     }
 
-    /**
-     * description: 商家修改登录密码
-     *
-     * @param requestModel
-     * @param:
-     * @return: com.xunmeng.youxuan.base.Response
-     * @author LTM
-     * @date: 2023/5/20 16:08
-     */
+
     @Override
-    public Response passwordChange(ShopPasswordQo requestModel) {
+    public Result<T> passwordChange(ShopPasswordQo requestModel) {
         String nickName = requestModel.getNickName();
         List<YxShopInfo> listShop = getListShop(nickName);
 
         if (listShop == null || listShop.isEmpty()) {
-            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
+            return Result.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
         } else if (listShop.size() != 1) {
-            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
+            return Result.newFailedResponse(ErrorCodeEnum.INFO_NOT_ONLY);
         }
 
         String password = requestModel.getPass() + listShop.get(0).getEncrypt();
         BCrypt.Result res = BCrypt.verifyer().verify(password.toCharArray(), listShop.get(0).getPassword());
         if (!res.verified) {
-            return Results.newFailedResponse(ErrorCodeEnum.PASSWORD_ERROR);
+            return Result.newFailedResponse(ErrorCodeEnum.PASSWORD_ERROR);
         }
 
         String passwordNew = requestModel.getPassNew() + listShop.get(0).getEncrypt();
         listShop.get(0).setPassword(BCrypt.withDefaults().hashToString(10, passwordNew.toCharArray()));
         if (this.updateById(listShop.get(0))) {
-            return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+            return Result.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
-        return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+        return Result.newFailedResponse(ErrorCodeEnum.FAIL);
     }
 
     @Override
-    public Response<IPage<ShopDto>> getShopList(ShopListQo requestModel) {
+    public Result<IPage<ShopDto>> getShopList(ShopListQo requestModel) {
         PageUtil.initRequestPage(requestModel);
 
         LambdaQueryWrapper<YxShopInfo> queryWrapper = new LambdaQueryWrapper<YxShopInfo>()
@@ -136,7 +120,7 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
                 , queryWrapper);
 
         if (dataList == null || dataList.getRecords() == null || dataList.getRecords().isEmpty()) {
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL);
         }
 
         IPage<ShopDto> result = new Page<ShopDto>()
@@ -146,11 +130,11 @@ public class YxShopInfoServiceImpl extends ServiceImpl<YxShopInfoMapper, YxShopI
                 .setSize(dataList.getSize())
                 .setRecords(JSONArray.parseArray(JSONArray.toJSONString(dataList.getRecords()), ShopDto.class));
 
-        return Results.newSuccessResponse(result);
+        return Result.newSuccessResponse(result);
     }
 
     @Override
-    public Response<UserInfo> registerForShop(WXShopInfoQo requestModel) {
+    public Result<UserInfo> registerForShop(WXShopInfoQo requestModel) {
         return null;
     }
 

@@ -3,8 +3,7 @@ package com.xunmeng.youxuan.service.Impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xunmeng.youxuan.base.Response;
-import com.xunmeng.youxuan.base.Results;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.YxProductInfo;
 import com.xunmeng.youxuan.domain.YxShopInfo;
@@ -26,6 +25,7 @@ import com.xunmeng.youxuan.service.IYxShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -52,10 +52,10 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
     private final IYxShopInfoService yxShopInfoService;
 
     @Override
-    public Response addToCart(ShoppingCartAddQo requestModel) {
+    public Result<T> addToCart(ShoppingCartAddQo requestModel) {
         UserInfo userInfo = baseLogic.getCurrentUserInfo();
         if (userInfo == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+            return Result.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }
 
         // 先检查有没有同样商品同购买用户的订单，就是有没有相同订单
@@ -71,10 +71,10 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
         //商品信息
         YxProductInfo productInfo = yxProductInfoService.getById(requestModel.getProductId());
         if (productInfo == null || !productInfo.getShopId().equals(requestModel.getShopId())) {
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL);
         }
         if (productInfo.getStock() == null || productInfo.getStock() < 1) {
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL.getCode(),
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL,
                     productInfo.getProductName() + "商品库存不足，无法加入购物车");
         }
 
@@ -85,7 +85,7 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
             updateModel.setBuyCount((carts.get(0).getBuyCount() + 1));
 
             if (productInfo.getStock() < updateModel.getBuyCount()) {
-                return Results.newFailedResponse(ErrorCodeEnum.FAIL, productInfo.getProductName()
+                return Result.newFailedResponse(ErrorCodeEnum.FAIL, productInfo.getProductName()
                         + "商品库存不足，无法加入购物车");
             }
         } else {
@@ -105,16 +105,16 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
         // 所以修改时间单独抽出来
         updateModel.setUpdateTime(LocalDateTime.now());
         if (this.saveOrUpdate(updateModel)) {
-            return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+            return Result.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
-        return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+        return Result.newFailedResponse(ErrorCodeEnum.FAIL);
     }
 
     @Override
-    public Response clearCart(CommonIdQo requestModel) {
+    public Result<T> clearCart(CommonIdQo requestModel) {
         UserInfo userInfo = baseLogic.getCurrentUserInfo();
         if (userInfo == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+            return Result.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }
 
         List<YxShoppingCart> carts = this.list(new LambdaQueryWrapper<YxShoppingCart>()
@@ -129,29 +129,28 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                     }
             );
             if (this.updateBatchById(carts)) {
-                return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+                return Result.newSuccessResponse(ErrorCodeEnum.SUCCESS);
             }
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL);
         }
-        return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+        return Result.newSuccessResponse(ErrorCodeEnum.SUCCESS);
     }
 
     @Override
-    public Response cartNumberChanger(CartNumQo requestModel) {
+    public Result<T> cartNumberChanger(CartNumQo requestModel) {
         YxShoppingCart cart = this.getById(requestModel.getCartId());
-        System.out.println(cart);
         if (cart == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
+            return Result.newFailedResponse(ErrorCodeEnum.INFO_NOT_EXIST);
         }
 
         YxProductInfo productInfo = yxProductInfoService.getById(cart.getProductId());
         if (productInfo == null || productInfo.getStock() == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL);
         }
 
         int buyCount = requestModel.getNumber() + cart.getBuyCount();
         if (productInfo.getStock() < buyCount) {
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL.getCode(), productInfo.getProductName()
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL, productInfo.getProductName()
                     + "商品超出库存，无法加入购物车！");
         }
         if (buyCount < 0) {
@@ -161,16 +160,16 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
         }
 
         if (this.updateById(cart)) {
-            return Results.newSuccessResponse(ErrorCodeEnum.SUCCESS);
+            return Result.newSuccessResponse(ErrorCodeEnum.SUCCESS);
         }
-        return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+        return Result.newFailedResponse(ErrorCodeEnum.FAIL);
     }
 
     @Override
-    public Response<ShoppingCartSumDto> cartList(CommonIdQo requestModel) {
+    public Result<ShoppingCartSumDto> cartList(CommonIdQo requestModel) {
         UserInfo userInfo = baseLogic.getCurrentUserInfo();
         if (userInfo == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+            return Result.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }
 
         ShoppingCartSumDto resultData = null;
@@ -191,14 +190,14 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                     .setCartList(result)
                     .setSumPrice(sumPrice);
         }
-        return Results.newSuccessResponse(resultData);
+        return Result.newSuccessResponse(resultData);
     }
 
     @Override
-    public Response<List<CartShopDto>> cartShopList() {
+    public Result<List<CartShopDto>> cartShopList() {
         UserInfo userInfo = baseLogic.getCurrentUserInfo();
         if (userInfo == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+            return Result.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }
         // 查询该用户购物车订单
         List<YxShoppingCart> shoppingCarts = this.list(new LambdaQueryWrapper<YxShoppingCart>()
@@ -209,7 +208,7 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
 
         // 购物车为空返回
         if (CollectionUtils.isEmpty(shoppingCarts)) {
-            return Results.newSuccessResponse(null);
+            return Result.newSuccessResponse(null);
         }
 
         List<YxShopInfo> shopInfos = yxShopInfoService.list(new LambdaQueryWrapper<YxShopInfo>()
@@ -226,14 +225,14 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                     return shopDto;
                 })
                 .collect(Collectors.toList());
-        return Results.newSuccessResponse(result);
+        return Result.newSuccessResponse(result);
     }
 
     @Override
-    public Response<List<CartUserDto>> userCartList() {
+    public Result<List<CartUserDto>> userCartList() {
         UserInfo userInfo = baseLogic.getCurrentUserInfo();
         if (userInfo == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
+            return Result.newFailedResponse(ErrorCodeEnum.SESSION_TIMEOUT);
         }
 
         List<YxShoppingCart> shoppingCarts = this.list(new LambdaQueryWrapper<YxShoppingCart>()
@@ -241,7 +240,7 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                 .eq(YxShoppingCart::getDataStatus, ConstantEnum.NORMAL));
 
         if (CollectionUtils.isEmpty(shoppingCarts)) {
-            return Results.newSuccessResponse(null);
+            return Result.newSuccessResponse(ErrorCodeEnum.SHOPPING_CART_ISEMPTY);
         }
 
         List<Long> shopIds = shoppingCarts.stream().map(YxShoppingCart::getShopId).collect(Collectors.toList());
@@ -273,6 +272,6 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                 })
                 .collect(Collectors.toList());
 
-        return Results.newSuccessResponse(result);
+        return Result.newSuccessResponse(result);
     }
 }

@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xunmeng.youxuan.base.Response;
-import com.xunmeng.youxuan.base.Results;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.YxProductInfo;
 import com.xunmeng.youxuan.enums.ConstantEnum;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
@@ -37,12 +36,12 @@ public class YxProductInfoServiceImpl extends ServiceImpl<YxProductInfoMapper, Y
         implements IYxProductInfoService {
 
     @Override
-    public Response<IPage<ProductDto>> productList(ProductSearchPageQo requestModel) {
+    public Result<IPage<ProductDto>> productList(ProductSearchPageQo requestModel) {
         PageUtil.initRequestPage(requestModel);
         return getProductList(requestModel, false);
     }
 
-    private Response<IPage<ProductDto>> getProductList(ProductSearchPageQo requestModel, boolean isManage) {
+    private Result<IPage<ProductDto>> getProductList(ProductSearchPageQo requestModel, boolean isManage) {
 
         LambdaQueryWrapper<YxProductInfo> queryWrapper = new LambdaQueryWrapper<YxProductInfo>()
                 .like(StringUtils.isNotBlank(requestModel.getProductName()), YxProductInfo::getProductName
@@ -67,7 +66,7 @@ public class YxProductInfoServiceImpl extends ServiceImpl<YxProductInfoMapper, Y
         IPage<YxProductInfo> dataList = this.page(new Page<>(requestModel.getPageIndex(), requestModel.getPageSize())
                 , queryWrapper);
         if (dataList == null || dataList.getRecords() == null) {
-            return Results.newFailedResponse(ErrorCodeEnum.FAIL);
+            return Result.newFailedResponse(ErrorCodeEnum.FAIL);
         }
 
         List<ProductDto> resultList = JSON.parseArray(JSON.toJSONString(dataList.getRecords()), ProductDto.class);
@@ -85,6 +84,6 @@ public class YxProductInfoServiceImpl extends ServiceImpl<YxProductInfoMapper, Y
                 .setSize(dataList.getSize())
                 .setTotal(dataList.getTotal());
 
-        return Results.newSuccessResponse(result);
+        return Result.newSuccessResponse(result);
     }
 }

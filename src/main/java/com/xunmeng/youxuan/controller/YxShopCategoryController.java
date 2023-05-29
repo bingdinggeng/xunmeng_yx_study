@@ -1,7 +1,7 @@
 package com.xunmeng.youxuan.controller;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.responsedto.ShopCategoryDto;
 import com.xunmeng.youxuan.service.IYxShopCategoryService;
 import io.swagger.annotations.Api;
@@ -34,7 +34,7 @@ public class YxShopCategoryController {
 
     @ApiOperation(value = "店铺分类列表全", notes = "店铺分类列表全")
     @PostMapping("/list/all")
-    public Response<List<ShopCategoryDto>> getCategoryList(){
+    public Result<List<ShopCategoryDto>> getCategoryList(){
         return yxShopCategoryService.getCategoryList();
     }
 

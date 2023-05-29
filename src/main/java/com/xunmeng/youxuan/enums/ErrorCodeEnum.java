@@ -52,6 +52,7 @@ public enum ErrorCodeEnum {
     SHOPPING_CART_NOT_EXIST(601,"购物车信息不存在"),
     SHOPPING_CART_LIST_ERROR(602,"购物车信息错误"),
     SHOPPING_DELETE_ERROR(603,"购物车商品删除失败"),
+    SHOPPING_CART_ISEMPTY(604,"购物车为空"),
 
     ORDER_INFO_ERROR(701,"订单信息错误！"),
     ORDER_OVER_DAY_LIMIT(702,"您已超过日限额！"),

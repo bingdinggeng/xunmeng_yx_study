@@ -1,14 +1,14 @@
 package com.xunmeng.youxuan.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.UserInfo;
 import com.xunmeng.youxuan.domain.YxFinancialSettlement;
+import com.xunmeng.youxuan.logic.BaseLogic;
 import com.xunmeng.youxuan.mapper.YxFinancialSettlementMapper;
 import com.xunmeng.youxuan.requestqo.FinanceShopQo;
 import com.xunmeng.youxuan.responsedto.SumFinanceShopDto;
 import com.xunmeng.youxuan.service.IYxFinancialSettlementService;
-import com.xunmeng.youxuan.logic.BaseLogic;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,18 +30,8 @@ public class YxFinancialSettlementServiceImpl extends ServiceImpl<YxFinancialSet
 
     private final BaseLogic baseUtil;
 
-
-    /**
-     * description: 财务列表，用户查看
-     *
-     * @param requestModel
-     * @param:
-     * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.responsedto.SumFinanceShopDto>
-     * @author LTM
-     * @date: 2023/5/21 10:15
-     */
     @Override
-    public Response<SumFinanceShopDto> listForUser(FinanceShopQo requestModel) {
+    public Result<SumFinanceShopDto> listForUser(FinanceShopQo requestModel) {
         UserInfo userInfo = baseUtil.getCurrentUserInfo();
 
 

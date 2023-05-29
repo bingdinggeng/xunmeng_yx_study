@@ -1,7 +1,7 @@
 package com.xunmeng.youxuan.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.xunmeng.youxuan.base.Response;
+import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.domain.YxUserLimit;
 import com.xunmeng.youxuan.responsedto.UserLimitDto;
 
@@ -16,11 +16,11 @@ import com.xunmeng.youxuan.responsedto.UserLimitDto;
  */
 public interface IYxUserLimitService extends IService<YxUserLimit> {
     /**
-     * description: 限额信息：用户查看
+     * description: /finance/limit/user 限额信息：用户查看
      * @param:
-     * @return: com.xunmeng.youxuan.base.Response<com.xunmeng.youxuan.responsedto.UserLimitDto>
+     * @return: com.xunmeng.youxuan.base.Result<com.xunmeng.youxuan.responsedto.UserLimitDto>
      * @author LTM
-     * @date: 2023/5/21 13:49
+     * @date: 2023/5/29 13:36
      */
-    Response<UserLimitDto> limitUserInfo();
+    Result<UserLimitDto> limitUserInfo();
 }
