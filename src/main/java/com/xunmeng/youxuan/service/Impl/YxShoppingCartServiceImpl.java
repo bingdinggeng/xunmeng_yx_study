@@ -215,7 +215,7 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                 .eq(YxShopInfo::getDataStatus, ConstantEnum.SHOP_STATUS_PASSED));
         Map<Long, String> shopMap = shopInfos.stream()
                 .collect(Collectors.toMap(YxShopInfo::getShopId, YxShopInfo::getShopName));
-        // TODO 这种操作方式代码还需记忆
+
         List<CartShopDto> result = shoppingCarts.stream()
                 .map(cart -> {
                     CartShopDto shopDto = new CartShopDto();
@@ -257,7 +257,7 @@ public class YxShoppingCartServiceImpl extends ServiceImpl<YxShippingCartMapper,
                     cartUserDto.setShopId(shopId);
 
                     List<YxShopInfo> subShop = shopInfos.stream()
-                            .filter(item -> shopId.equals(item.getShopId())).collect(Collectors.toList());
+                            .filter(item -> item.getShopId().equals(shopId)).collect(Collectors.toList());
                     if (subShop.size() > 0) {
                         cartUserDto.setShopName(subShop.get(0).getShopName());
                     }

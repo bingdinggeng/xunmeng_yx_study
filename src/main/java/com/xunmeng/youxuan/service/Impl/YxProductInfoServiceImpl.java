@@ -65,6 +65,7 @@ public class YxProductInfoServiceImpl extends ServiceImpl<YxProductInfoMapper, Y
 
         IPage<YxProductInfo> dataList = this.page(new Page<>(requestModel.getPageIndex(), requestModel.getPageSize())
                 , queryWrapper);
+
         if (dataList == null || dataList.getRecords() == null) {
             return Result.newFailedResponse(ErrorCodeEnum.FAIL);
         }

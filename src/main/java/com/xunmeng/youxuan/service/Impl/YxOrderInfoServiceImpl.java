@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +45,7 @@ public class YxOrderInfoServiceImpl extends ServiceImpl<YxOrderInfoMapper, YxOrd
     private final BaseLogic baseLogic;
     private final IYxShopInfoService yxShopInfoService;
     private final IYxOrderItemService yxOrderItemService;
+
     @Override
     public Result<IPage<OrderInfoDto>> orderList(OrderQueryQo requestModel) {
         UserInfo userInfo = baseLogic.getCurrentUserInfo();
@@ -66,7 +69,7 @@ public class YxOrderInfoServiceImpl extends ServiceImpl<YxOrderInfoMapper, YxOrd
             queryWrapper = queryWrapper.orderByDesc(YxOrderInfo::getAddTime);
         }
 
-        IPage<YxOrderInfo> dataList = this.page(new Page<>(requestModel.getPageSize(),requestModel.getPageIndex())
+        IPage<YxOrderInfo> dataList = this.page(new Page<>(requestModel.getPageIndex(),requestModel.getPageSize())
                 , queryWrapper);
 
         if (dataList == null || dataList.getRecords() == null || dataList.getRecords().isEmpty()) {
@@ -78,6 +81,7 @@ public class YxOrderInfoServiceImpl extends ServiceImpl<YxOrderInfoMapper, YxOrd
         List<YxShopInfo> shops = yxShopInfoService.list(new LambdaQueryWrapper<YxShopInfo>()
                 .in(shopIds.size() > 0, YxShopInfo::getShopId,shopIds , null));
 
+        // TODO 这个接口返回的total值有问题，但是原代码没有问题，我将原代码复制粘贴过来total还是0，不清楚为什么
         IPage<OrderInfoDto> result = new Page<OrderInfoDto>()
                 .setTotal(dataList.getTotal())
                 .setCurrent(dataList.getCurrent())
@@ -89,23 +93,26 @@ public class YxOrderInfoServiceImpl extends ServiceImpl<YxOrderInfoMapper, YxOrd
         List<YxOrderItem> itemList = yxOrderItemService.list(new LambdaQueryWrapper<YxOrderItem>()
                 .in(YxOrderItem::getOrderId, orderIds)
                 .eq(YxOrderItem::getDataStatus, ConstantEnum.NORMAL));
+        // 构建 orderId到subOrderItem的映射关系
+        Map<Long, List<YxOrderItem>> orderIdToItemsMap = itemList.stream()
+                .collect(Collectors.groupingBy(YxOrderItem::getOrderId));
+        //Function.identity() 是一个静态方法引用，表示使用对象本身作为值,将流中的每个YxShopInfo对象以其shopId作为键，
+        // 以YxShopInfo对象本身作为值，创建一个Map<Long, YxShopInfo>。这样就建立了一个通过shopId快速查找YxShopInfo对象的映射关系。
+        Map<Long, YxShopInfo> shopIdToShopInfoMap = shops.stream()
+                .collect(Collectors.toMap(YxShopInfo::getShopId, Function.identity()));
 
-        if(itemList != null && itemList.size() > 0){
-            for(OrderInfoDto data: result.getRecords()){
-                List<YxOrderItem> subOrderItem = itemList.stream().filter(item -> item.getOrderId()
-                        .equals(data.getOrderId())).collect(Collectors.toList());
-                if (subOrderItem.size() > 0) {
-                    data.setItems(JSONArray.parseArray(JSONArray.toJSONString(subOrderItem), OrderItemDto.class));
-                }
-                if(shops != null && shops.size() > 0){
-                    List<YxShopInfo> subShops = shops.stream().filter(item -> item.getShopId()
-                            .equals(data.getShopId())).collect(Collectors.toList());
-                    if(subShops.size() > 0){
-                        data.setShopTel(subShops.get(0).getShopPhone());
+        result.getRecords().forEach(data -> {
+                    List<YxOrderItem> subOrderItem = orderIdToItemsMap.get(data.getOrderId());
+                    if (subOrderItem != null && !subOrderItem.isEmpty()) {
+                        data.setItems(JSONArray.parseArray(JSONArray.toJSONString(subOrderItem), OrderItemDto.class));
+                    }
+
+                    YxShopInfo shopInfo = shopIdToShopInfoMap.get(data.getShopId());
+                    if (shopInfo != null) {
+                        data.setShopTel(shopInfo.getShopName());
                     }
                 }
-            }
-        }
+        );
         return Result.newSuccessResponse(result);
     }
 }
