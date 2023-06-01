@@ -18,7 +18,7 @@ public class PageUtil {
         if(requestModel.getPageSize() == null || requestModel.getPageSize() < 1){
             requestModel.setPageSize(PageConfig.PAGE_SIZE);
         }
-        if(requestModel.getPageSize() == null || requestModel.getPageIndex() < 1){
+        if(requestModel.getPageIndex() == null || requestModel.getPageIndex() < 1){
             requestModel.setPageIndex(1);
         }
     }

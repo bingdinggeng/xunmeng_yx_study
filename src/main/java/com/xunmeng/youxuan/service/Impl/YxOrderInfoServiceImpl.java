@@ -81,7 +81,6 @@ public class YxOrderInfoServiceImpl extends ServiceImpl<YxOrderInfoMapper, YxOrd
         List<YxShopInfo> shops = yxShopInfoService.list(new LambdaQueryWrapper<YxShopInfo>()
                 .in(shopIds.size() > 0, YxShopInfo::getShopId,shopIds , null));
 
-        // TODO 这个接口返回的total值有问题，但是原代码没有问题，我将原代码复制粘贴过来total还是0，不清楚为什么
         IPage<OrderInfoDto> result = new Page<OrderInfoDto>()
                 .setTotal(dataList.getTotal())
                 .setCurrent(dataList.getCurrent())
