@@ -5,9 +5,14 @@ import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.enums.ErrorCodeEnum;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.ss.formula.functions.T;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ClassName: GlobalExceptionHandler
@@ -29,13 +34,17 @@ public class GlobalExceptionHandler {
         return Result.newFailedResponse(e.getErrorCodeEnum());
     }
     /**
-     * 自定义异常
+     * 处理 json 请求体调用接口校验失败抛出的异常
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<T> businessException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        String errorMsg = fieldErrors.stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(","));
         return Result.newFailedResponse(ErrorCodeEnum.PARAM_ERROR,
-                e.getBindingResult().getFieldError().getDefaultMessage());
+                errorMsg);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

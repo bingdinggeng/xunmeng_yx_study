@@ -1,6 +1,5 @@
 package com.xunmeng.youxuan.utils;
 
-import com.xunmeng.youxuan.config.PageConfig;
 import com.xunmeng.youxuan.requestqo.PageRequestQo;
 
 /**
@@ -13,10 +12,13 @@ import com.xunmeng.youxuan.requestqo.PageRequestQo;
  * @Version 1.0
  */
 public class PageUtil {
-
+    /**
+     * 默认每页大小
+     */
+    public final static Integer PAGE_SIZE = 10;
     public static void initRequestPage(PageRequestQo requestModel){
         if(requestModel.getPageSize() == null || requestModel.getPageSize() < 1){
-            requestModel.setPageSize(PageConfig.PAGE_SIZE);
+            requestModel.setPageSize(PAGE_SIZE);
         }
         if(requestModel.getPageIndex() == null || requestModel.getPageIndex() < 1){
             requestModel.setPageIndex(1);
