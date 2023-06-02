@@ -326,6 +326,9 @@ public class BaseLogic {
         return user;
     }
 
+
+    //private static final Map<String, Long> requestCache = new ConcurrentHashMap<>();
+    //private static final long TIME_WINDOW_SECONDS = 5;
     /**
      * description: 重复提交check
      * @param:
@@ -339,4 +342,28 @@ public class BaseLogic {
             throw new BusinessException(ErrorCodeEnum.REPEAT_COMMIT_ERROR);
         }
     }
+    /* 这是chatgpt的修改方案，它认为原代码对redis的访问太频繁，可以挪到内存里去做，缺点就是只对本地有效，没有一致性和分布式
+    public void checkRepeat(String key){
+        long currentTime = System.currentTimeMillis();
+        Long previousTime = requestCache.putIfAbsent(key, currentTime);
+
+        if (previousTime != null && currentTime - previousTime < TimeUnit.SECONDS.toMillis(TIME_WINDOW_SECONDS)) {
+            // 移除缓存的请求记录
+            requestCache.remove(key);
+            throw new BusinessException(ErrorCodeEnum.REPEAT_COMMIT_ERROR);
+        }
+
+        // 定时清理过期的请求记录
+        if (currentTime % 10 == 0) {
+            // 每隔10秒清理一次
+            clearExpiredRequests();
+        }
+    }
+
+    private void clearExpiredRequests() {
+        long currentTime = System.currentTimeMillis();
+        requestCache.entrySet().removeIf(entry -> currentTime - entry.getValue() >=
+                TimeUnit.SECONDS.toMillis(TIME_WINDOW_SECONDS));
+    }*/
+
 }

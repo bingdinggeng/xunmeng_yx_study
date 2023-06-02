@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.xunmeng.youxuan.base.Result;
 import com.xunmeng.youxuan.requestqo.OrderQueryQo;
+import com.xunmeng.youxuan.requestqo.OrderSaveQo;
 import com.xunmeng.youxuan.responsedto.OrderInfoDto;
 import com.xunmeng.youxuan.service.IYxOrderInfoService;
 import io.swagger.annotations.Api;
@@ -38,5 +39,11 @@ public class YxOrderInfoController {
     @PostMapping("/list")
     public Result<IPage<OrderInfoDto>> orderList(@RequestBody @Validated OrderQueryQo requestModel) {
         return yxOrderInfoService.orderList(requestModel);
+    }
+
+    @ApiOperation(value = "生成订单", notes = "生成订单")
+    @PostMapping("/save")
+    public Result<OrderInfoDto> saveOrder(@RequestBody @Validated OrderSaveQo requestModel) {
+        return yxOrderInfoService.saveOrder(requestModel);
     }
 }
